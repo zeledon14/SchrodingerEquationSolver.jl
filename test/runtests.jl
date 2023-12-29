@@ -2,5 +2,5 @@ using SchrodingerEquationSolver
 using Test
 
 @testset "SchrodingerEquationSolver.jl" begin
-    # Write your tests here.
+    include("u_s1_hydrogen.jl")
 end
