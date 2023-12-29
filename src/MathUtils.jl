@@ -109,12 +109,12 @@ function merge_solutions(forward::Vector{Float32}, backward::Vector{Float32},
 end
 
 """
-    integral(func::Vector{Float32}, grid::Vector{Float32})
+    integral(func::Vector{Float32},grid::Vector{Float32})::Float32
 
-    Returns the value of the integral of func from grid[1] to grid[end]
-    the integration is perform using the trapezoidal rule.
-    I= \sum 0.5*(func(x_{i+1})+func(x_{i}))*(x_{i+1} - x_{i})
-
+integral(func::Vector{Float32}, grid::Vector{Float32})
+Returns the value of the integral of func from grid[1] to grid[end]
+the integration is perform using the trapezoidal rule.
+I= sum 0.5*(func(x_{i+1})+func(x_{i}))*(x_{i+1} - x_{i})
 **Inputs:**
 - `func::Vector{Float32}`: vector with the values of the function to integrate
 - `grid::Vector{Float32}`: grid where the function is defined
@@ -126,18 +126,18 @@ function integral(func::Vector{Float32},grid::Vector{Float32})::Float32
 end
 
 """
-    normalize!(func::Vector{Float32}, grid::Vector{Float32})
+    normalize!(func::Vector{Float32},grid::Vector{Float32})::Vector{Float32}
 
-    Normlizes the function func such that \int func(x)^2 dx = 1
-    returns the normalized function func 
+Normlizes the function func such that int func(x)^2 dx = 1
+returns the normalized function func 
 
 **Inputs:**
 - `func::Vector{Float32}`: vector with the values of the function to normalize
 - `grid::Vector{Float32}`: grid where the function is defined
 """
 function normalize!(func::Vector{Float32},grid::Vector{Float32})::Vector{Float32}
-    func_sqrt= func.^2.0
-    I= integral(grid, func_sqrt)
+    func_sqrt::Vector{Float32}= func.^2.0
+    I= integral(func_sqrt, grid)
     I=I^(0.5)
     out= func./I
     return out
