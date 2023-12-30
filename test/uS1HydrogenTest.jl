@@ -1,19 +1,12 @@
 using AutomaticDocstrings
 using Test
-include("../src/Grids.jl");
-using .Grids;
-include("../src/Potentials.jl")
-using .Potentials;
-include("../src/Hydrogen.jl")
-using .Hydrogen;
 
-
-include("../src/IntegralNumericalMethods.jl");
-using .IntegralNumericalMethods;
-
-include("../src/MathUtils.jl")
-using .MathUtils
-@testset "u_s1_hydrogen" begin
+import .SchrodingerEquationSolver.Grids as Grids
+import .SchrodingerEquationSolver.Potentials as Potentials
+import .SchrodingerEquationSolver.Hydrogen as Hydrogen
+import .SchrodingerEquationSolver.IntegralNumericalMethods as IntegralNumericalMethods
+import .SchrodingerEquationSolver.MathUtils as MathUtils
+@testset "uS1HydrogenTest" begin
         
         r_max::Float32=10.0;
         l::Int32=0;
