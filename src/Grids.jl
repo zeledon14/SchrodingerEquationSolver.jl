@@ -41,8 +41,8 @@ module Grids
 
     """
     function uniform_grid(r_min::Float32, r_max::Float32, N::Int32)::Vector{Float32}
-        delta= (r_max - r_min)/(N-1)
-        grid= [r_min + i*delta for i=0:(N-1)]
+        delta= (r_max - r_min)/(N-1);
+        grid= [r_min + i*delta for i=0:(N-1)];
         return grid
     end
 end
