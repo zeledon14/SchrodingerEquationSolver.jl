@@ -1,0 +1,28 @@
+using AutomaticDocstrings
+
+module InitialConditions
+
+"""
+    atom(grid::Vector{Float32}, E::Float32, l::Int32)
+
+DOCSTRING
+
+**Inputs:**
+- `grid::Vector{Float32}`: DESCRIPTION
+- `E::Float32`: DESCRIPTION
+- `l::Int32`: DESCRIPTION
+"""
+function atom(grid::Vector{Float32}, E::Float32, 
+              l::Int32)::Tuple{Float32,Float32,Float32,Float32}
+    init_valu1_fwrd::Float32=grid[1]^(l+1.0)#u_s1_hydr_norm[1];
+    init_valu2_fwrd::Float32=grid[2]^(l+1.0) #u_s1_hydr_norm[2];
+    if sign(E) < 0.0
+        lambda= (-2.0*E)^0.5;
+    else
+        lambda= (2.0*E)^0.5;
+    end
+    init_valu1_bwrd::Float32=grid[end]*exp(-1.0*lambda*grid[end]);#u_s1_hydr_norm[end];
+    init_valu2_bwrd::Float32=grid[end-1]*exp(-1.0*lambda*grid[end-1]);#u_s1_hydr_norm[end-1];          
+    return init_valu1_fwrd, init_valu2_fwrd, init_valu1_bwrd, init_valu2_bwrd
+end
+end
