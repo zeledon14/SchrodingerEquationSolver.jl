@@ -2,10 +2,10 @@ using AutomaticDocstrings
 module MathUtils
 
     """
-    turning_points_indices(func::Vector{Float32})::Vector{Int32}
+    indices_of_zeros_finder(func::Vector{Float32})::Vector{Int32}
 
     Return the indices where the function func changes sign, the index 
-    returned is the one before the change in sign. As func is of the form
+    returned is the one before the change in sign. If func is of the form
     V_effe - E, the returned indices mark the classical turning points.
 
     **Input:**
@@ -15,7 +15,7 @@ module MathUtils
         -indi::Vector{Int32} a vector with the indices of the turning points
             such that func[indi[i]] has a different sign than func[indi[i+1]]
     """
-function turning_points_indices(func::Vector{Float32})::Vector{Int32}
+function indices_of_zeros_finder(func::Vector{Float32})::Vector{Int32}
     indi= Int32[]
     sign_befo= Integer(sign(func[1]))
     for (i,f_i) in enumerate(func[2:end])
@@ -140,6 +140,22 @@ function normalize!(func::Vector{Float32},grid::Vector{Float32})::Vector{Float32
     I= integral(func_sqrt, grid)
     I=I^(0.5)
     out= func./I
+    return out
+end
+
+"""
+    error_difference(pred::Vector{Float32}, targ::Vector{Float32})
+
+measures the error between the predicted calculated function, and the target
+actual function.
+
+**Inputs:**
+- `pred::Vector{Float32}`: calculated function
+- `targ::Vector{Float32}`: target function 
+"""
+function error_difference(pred::Vector{Float32},targ::Vector{Float32})::Float32
+    temp::Vector{Float32}= ((pred .- targ).^2).^0.5;
+    out::Float32=sum(temp)/length(temp)
     return out
 end
 

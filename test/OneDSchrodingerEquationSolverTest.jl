@@ -24,6 +24,6 @@ import .SchrodingerEquationSolver.OneDSchrodingerEquationSolver as odses
         v_effe= v_colu;
         u_merged, merge_value= odses.solver(E,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid);
-        temp= ((u_merged .- u_s1_hydr_norm).^2).^0.5;
-        @test sum(temp)/length(temp) < 1.20
+        error= MathUtils.error_difference(u_merged,u_s1_hydr_norm)
+        @test error < 1.60e-7
 end

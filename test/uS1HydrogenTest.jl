@@ -24,7 +24,7 @@ import .SchrodingerEquationSolver.MathUtils as MathUtils
         f::Vector{Float32}= 2.0.*(v_effe .- E);
         #given f find the classical turning points
         g=zeros(Float32, size(f)[1]);
-        turn_pnts= MathUtils.turning_points_indices(f);
+        turn_pnts= MathUtils.indices_of_zeros_finder(f);
 
         #do forward integration of radial shcrodinger equation u
         u_fwd= IntegralNumericalMethods.integrate_second_order_DE(grid,g,f,
@@ -36,6 +36,6 @@ import .SchrodingerEquationSolver.MathUtils as MathUtils
         u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
         #merge solutions
         u_merged, merge_value= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
-        temp= ((u_merged .- u_s1_hydr).^2).^0.5;
-        @test sum(temp)/length(temp) < 1.325e-7;
+        error= MathUtils.error_difference(u_merged,u_s1_hydr)
+        @test error < 1.325e-7;
 end

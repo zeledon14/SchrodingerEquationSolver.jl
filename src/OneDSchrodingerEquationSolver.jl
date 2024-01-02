@@ -37,7 +37,7 @@ function solver(E::Float32,init_valu1_fwrd::Float32,
 
     #find turn_pnts of of f, basically the clasical turning points of the effective density_potential
     #with restepect to the E proposed eigenvalue
-    turn_pnts= MathUtils.turning_points_indices(f);
+    turn_pnts= MathUtils.indices_of_zeros_finder(f);
     if length(turn_pnts) ==  0
         throw(DomainError("the effective potential has no turning points 
         for the proposed energy eigenvalue, this means v_effe - E has no zeroes"));
