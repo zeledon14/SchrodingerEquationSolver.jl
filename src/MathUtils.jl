@@ -2,21 +2,21 @@ using AutomaticDocstrings
 module MathUtils
 
     """
-    indices_of_zeros_finder(func::Vector{Float32})::Vector{Int32}
+    indices_of_zeros_finder(func::Vector{Float64})::Vector{Int64}
 
     Return the indices where the function func changes sign, the index 
     returned is the one before the change in sign. If func is of the form
     V_effe - E, the returned indices mark the classical turning points.
 
     **Input:**
-        -func::Vector{Float32} the function to find the turning points
+        -func::Vector{Float64} the function to find the turning points
     
     **Output:**
-        -indi::Vector{Int32} a vector with the indices of the turning points
+        -indi::Vector{Int64} a vector with the indices of the turning points
             such that func[indi[i]] has a different sign than func[indi[i+1]]
     """
-function indices_of_zeros_finder(func::Vector{Float32})::Vector{Int32}
-    indi= Int32[]
+function indices_of_zeros_finder(func::Vector{Float64})::Vector{Int64}
+    indi= Int64[]
     sign_befo= Integer(sign(func[1]))
     for (i,f_i) in enumerate(func[2:end])
         if sign_befo != Integer(sign(f_i))
@@ -29,23 +29,23 @@ function indices_of_zeros_finder(func::Vector{Float32})::Vector{Int32}
 end
 
 """
-    rescale!(solution1::Vector{Float32}, 
-                   solution2::Vector{Float32}, 
-                   turning_point::Int32)::Tuple{Vector{Float32},Vector{Float32}}
+    rescale!(solution1::Vector{Float64}, 
+                   solution2::Vector{Float64}, 
+                   turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
 rescales the absolute biggest function to the smallest function
 suth that solution1(turning_point) = solution2(turning_point). 
 
 **Inputs:**
-- `solution1::Vector{Float32}`: Vector with the values of the function1 to be scaled
-- `solution2::Vector{Float32}`: Vector with the values of the function2 to be scaled
-- `turning_point::Int32`: Point at wich v_effe - E = 0, there may be many of this points
+- `solution1::Vector{Float64}`: Vector with the values of the function1 to be scaled
+- `solution2::Vector{Float64}`: Vector with the values of the function2 to be scaled
+- `turning_point::Int64`: Point at wich v_effe - E = 0, there may be many of this points
                           the one use is lower.
 **Output:**
-- `solution1, solution2::Tuple{Vector{Float32},Vector{Float32}}`: Rescaled solutions.
+- `solution1, solution2::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
 """
-function  rescale!(solution1::Vector{Float32}, 
-                   solution2::Vector{Float32}, 
-                   turning_point::Int32)::Tuple{Vector{Float32},Vector{Float32}}
+function  rescale!(solution1::Vector{Float64}, 
+                   solution2::Vector{Float64}, 
+                   turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
     A1=solution1[turning_point];
     A2=solution2[turning_point];
     if  abs(A1) > abs(A2)
@@ -57,19 +57,19 @@ function  rescale!(solution1::Vector{Float32},
 end
 
 """
-    three_point_derivative(func::Vector{Float32}, grid::Vector{Float32}, turning_point::Float32)
+    three_point_derivative(func::Vector{Float64}, grid::Vector{Float64}, turning_point::Float64)
 
 calculate the derivative of func over grid at the point turning_point,
 the derivative uses a three point derivative.
 
 **Inputs:**
-- `func::Vector{Float32}`: the function for which the derivative is calculated
-- `grid::Vector{Float32}`: the grid over which the function is defined
-- `turning_point::Int32`: the point where the derivative is calculated
+- `func::Vector{Float64}`: the function for which the derivative is calculated
+- `grid::Vector{Float64}`: the grid over which the function is defined
+- `turning_point::Int64`: the point where the derivative is calculated
 """
-function three_point_derivative(func::Vector{Float32},
-                                grid::Vector{Float32},
-                                turning_point::Int32)::Float32
+function three_point_derivative(func::Vector{Float64},
+                                grid::Vector{Float64},
+                                turning_point::Int64)::Float64
     nume= func[turning_point+1] - func[turning_point-1]
     deno= (grid[turning_point+1] - grid[turning_point]) + (grid[turning_point] - grid[turning_point-1])
     temp= nume/deno
@@ -77,27 +77,27 @@ function three_point_derivative(func::Vector{Float32},
 end
 
 """
-merge_solutions(forward::Vector{Float32}, backward::Vector{Float32},
-                         grid::Vector{Float32}, turning_point::Int32)
-                         ::Tuple{Vector{Float32},Float32}
+merge_solutions(forward::Vector{Float64}, backward::Vector{Float64},
+                         grid::Vector{Float64}, turning_point::Int64)
+                         ::Tuple{Vector{Float64},Float64}
 
 merges the backward and forward integrated solutions into a merged one,
 it also calculates the difference between the derivatives at the 
 merging (turning) point, the merging happens at the turning_point.
 
 **Inputs:**
-- `forward::Vector{Float32}`: vextor with the forward integrated solution.
-- `backward::Vector{Float32}`: vector with the backward integreated solution.
-- `grid::Vector{Float32}`: the grid over which the function is defined.
-- `turning_point::Float32`: turning point where the solutions are merged.
+- `forward::Vector{Float64}`: vextor with the forward integrated solution.
+- `backward::Vector{Float64}`: vector with the backward integreated solution.
+- `grid::Vector{Float64}`: the grid over which the function is defined.
+- `turning_point::Float64`: turning point where the solutions are merged.
 
 **Inputs:**
-- `u_merged::Vector{Float32}`: vector with the merged function.
-- `merge_value::Float32`: difference between derivatives on the turning (merging) point.
+- `u_merged::Vector{Float64}`: vector with the merged function.
+- `merge_value::Float64`: difference between derivatives on the turning (merging) point.
 """
-function merge_solutions(forward::Vector{Float32}, backward::Vector{Float32},
-                         grid::Vector{Float32}, turning_point::Int32)::Tuple{Vector{Float32},Float32}
-    u_merged=zeros(Float32, size(forward)[1]);
+function merge_solutions(forward::Vector{Float64}, backward::Vector{Float64},
+                         grid::Vector{Float64}, turning_point::Int64)::Tuple{Vector{Float64},Float64}
+    u_merged=zeros(Float64, size(forward)[1]);
     fwrd_drvt= three_point_derivative(forward, grid, turning_point);
     bwrd_drvt= three_point_derivative(backward, grid, turning_point);
     merge_value= fwrd_drvt -  bwrd_drvt;
@@ -109,34 +109,34 @@ function merge_solutions(forward::Vector{Float32}, backward::Vector{Float32},
 end
 
 """
-    integral(func::Vector{Float32},grid::Vector{Float32})::Float32
+    integral(func::Vector{Float64},grid::Vector{Float64})::Float64
 
-integral(func::Vector{Float32}, grid::Vector{Float32})
+integral(func::Vector{Float64}, grid::Vector{Float64})
 Returns the value of the integral of func from grid[1] to grid[end]
 the integration is perform using the trapezoidal rule.
 I= sum 0.5*(func(x_{i+1})+func(x_{i}))*(x_{i+1} - x_{i})
 **Inputs:**
-- `func::Vector{Float32}`: vector with the values of the function to integrate
-- `grid::Vector{Float32}`: grid where the function is defined
+- `func::Vector{Float64}`: vector with the values of the function to integrate
+- `grid::Vector{Float64}`: grid where the function is defined
 """
-function integral(func::Vector{Float32},grid::Vector{Float32})::Float32
+function integral(func::Vector{Float64},grid::Vector{Float64})::Float64
     I= 0.5.*(grid[2:end] .- grid[1:end-1]).*(func[2:end] .+ func[1:end-1])
     I= sum(I)
     return I
 end
 
 """
-    normalize!(func::Vector{Float32},grid::Vector{Float32})::Vector{Float32}
+    normalize!(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
 
 Normlizes the function func such that int func(x)^2 dx = 1
 returns the normalized function func 
 
 **Inputs:**
-- `func::Vector{Float32}`: vector with the values of the function to normalize
-- `grid::Vector{Float32}`: grid where the function is defined
+- `func::Vector{Float64}`: vector with the values of the function to normalize
+- `grid::Vector{Float64}`: grid where the function is defined
 """
-function normalize!(func::Vector{Float32},grid::Vector{Float32})::Vector{Float32}
-    func_sqrt::Vector{Float32}= func.^2.0
+function normalize!(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
+    func_sqrt::Vector{Float64}= func.^2.0
     I= integral(func_sqrt, grid)
     I=I^(0.5)
     out= func./I
@@ -144,18 +144,18 @@ function normalize!(func::Vector{Float32},grid::Vector{Float32})::Vector{Float32
 end
 
 """
-    error_difference(pred::Vector{Float32}, targ::Vector{Float32})
+    error_difference(pred::Vector{Float64}, targ::Vector{Float64})
 
 measures the error between the predicted calculated function, and the target
 actual function.
 
 **Inputs:**
-- `pred::Vector{Float32}`: calculated function
-- `targ::Vector{Float32}`: target function 
+- `pred::Vector{Float64}`: calculated function
+- `targ::Vector{Float64}`: target function 
 """
-function error_difference(pred::Vector{Float32},targ::Vector{Float32})::Float32
-    temp::Vector{Float32}= ((pred .- targ).^2).^0.5;
-    out::Float32=sum(temp)/length(temp)
+function error_difference(pred::Vector{Float64},targ::Vector{Float64})::Float64
+    temp::Vector{Float64}= ((pred .- targ).^2).^0.5;
+    out::Float64=sum(temp)/length(temp)
     return out
 end
 

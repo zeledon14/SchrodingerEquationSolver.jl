@@ -1,7 +1,7 @@
 module Hydrogen
 
     """
-    u_s1_hydrogen(grid::Vector{Float32})::Vector{Float32}
+    u_s1_hydrogen(grid::Vector{Float64})::Vector{Float64}
 
     radial u function that is the solution of the radial shcrodinger equation  
     in the s1 state with eigenvalue 0.5
@@ -12,7 +12,7 @@ module Hydrogen
     **Output:**
         - u_s1: The vector with the values of u_s1 over the grid.
     """
-    function u_s1_hydrogen(grid::Vector{Float32})::Vector{Float32}
+    function u_s1_hydrogen(grid::Vector{Float64})::Vector{Float64}
         u=[xi*exp(-1.0*xi) for xi in grid]
         return u 
     end

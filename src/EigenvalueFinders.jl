@@ -5,11 +5,33 @@ using ..MathUtils
 import ..OneDSchrodingerEquationSolver as odses
 
 
-function illinois_eigenvalue_finder_from_guess(E_guess::Float32,
-    E_plus::Float32, E_minu::Float32,
-    v_effe::Vector{Float32}, grid::Vector{Float32}, 
+
+function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid::Vector{Float64}, 
+    initial_condition_function::Function, l::Int64=0)::Vector{Tuple{Float64,Float64}}
+
+    E_N= size(energy_grid)[1]
+    merg_valu_of_E=zeros(Float64, E_N);
+    for (i, ei) in enumerate(energy_grid)
+
+        init_valu1_fwrd, init_valu2_fwrd,
+        init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, ei, l);
+
+        u_merged, merge_value= odses.solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        init_valu2_bwrd, v_effe, grid);
+        merg_valu_of_E[i]=merge_value;
+    end
+    ener_indx= MathUtils.indices_of_zeros_finder(merg_valu_of_E);
+    out=[(energy_grid[i], energy_grid[i+1]) for (i) in ener_indx]
+    return out
+
+
+end
+
+function illinois_eigenvalue_finder_from_guess(E_guess::Float64,
+    E_plus::Float64, E_minu::Float64,
+    v_effe::Vector{Float64}, grid::Vector{Float64}, 
     initial_condition_function::Function,
-    N_max::Int32=300, tolerance::Float32=10.0e-10)
+    N_max::Int64=300, tolerance::Float64=10.0e-10)
     i=0
     Ec_befo=E_guess
     Ea=nodes[1]

@@ -6,5 +6,6 @@ include("Potentials.jl");
 include("IntegralNumericalMethods.jl");
 include("OneDSchrodingerEquationSolver.jl");
 include("InitialConditions.jl");
+include("EigenvalueFinders.jl");
 include("Hydrogen.jl");
 end

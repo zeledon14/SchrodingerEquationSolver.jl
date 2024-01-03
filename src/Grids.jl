@@ -2,7 +2,7 @@
 module Grids
     
     """
-    exponential_grid(r_max::Float32, Z::Int32)::Vector{Float32}
+    exponential_grid(r_max::Float64, Z::Int64)::Vector{Float64}
 
     Exponential grid as defined in J.P. Desclaux, Comp. Phys. Comm. 1, 216 (1969).
     Reference to the data to build the grid can be access in 
@@ -16,7 +16,7 @@ module Grids
             of elements in the grid is control internaly.
     
     """
-    function exponential_grid(r_max::Float32, Z::Int32)::Vector{Float32}
+    function exponential_grid(r_max::Float64, Z::Int64)::Vector{Float64}
         a=(4.34*10.0^(-6.0))/Z
         b=0.002304
         
@@ -28,7 +28,7 @@ module Grids
 
 
     """
-    uniform_grid(r_min::Float32, r_max::Float32, N::Int32)::Vector{Float32}
+    uniform_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
 
     Produces a unifor grid that starts at r_min and ends at r_max, and has 
     N points.
@@ -40,7 +40,7 @@ module Grids
         - grid: a uniform grid, where the distance between succesive points in constant.
 
     """
-    function uniform_grid(r_min::Float32, r_max::Float32, N::Int32)::Vector{Float32}
+    function uniform_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
         delta= (r_max - r_min)/(N-1);
         grid= [r_min + i*delta for i=0:(N-1)];
         return grid;

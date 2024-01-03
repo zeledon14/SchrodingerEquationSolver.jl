@@ -10,10 +10,10 @@ import .SchrodingerEquationSolver.InitialConditions as InitialConditions
 import .SchrodingerEquationSolver.OneDSchrodingerEquationSolver as odses
 @testset "OneDSchrodingerEquationSolverTest" begin
         
-        r_max::Float32=10.0;
-        Z::Int32=1;
-        l::Int32=0;
-        E::Float32= -0.5000;
+        r_max::Float64=10.0;
+        Z::Int64=1;
+        l::Int64=0;
+        E::Float64= -0.5000;
 
         grid= Grids.exponential_grid(r_max, Z);
         v_colu= Potentials.coulomb_potential(Z, grid);

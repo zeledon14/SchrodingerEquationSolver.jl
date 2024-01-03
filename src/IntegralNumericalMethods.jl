@@ -1,9 +1,9 @@
 module IntegralNumericalMethods
 
     """
-    integrate_second_order_DE(grid::Vector{Float32}, 
-        g::Vector{Float32}, f::Vector{Float32}, 
-        init_valu1::Float32, init_valu2::Float32)::Vector{Float32}
+    integrate_second_order_DE(grid::Vector{Float64}, 
+        g::Vector{Float64}, f::Vector{Float64}, 
+        init_valu1::Float64, init_valu2::Float64)::Vector{Float64}
 
         Solves differential equations of the form
             \frac{d^2y}{dx^2} = f(x)y + g(x) by transforming it into a system
@@ -14,23 +14,23 @@ module IntegralNumericalMethods
         (RK4) and prediction correction Adams-Moulton oder 5 (PCAM5). The first 4 values of 
         the solution uses the RK4 method and the rest uses the PCAM5.
             **Inputs:**
-                -grid::Vector{Float32} values of the space grid where the functions are defined
-                -g::Vector{Float32} a vector with the values g over the grid
-                -f::Vector{Float32} a vector with the values f over the grid
-                -init_valu1::Float32 first initial value of y at grid[1]
-                -init_valu2::Float32 first initial value of y at grid[2]
+                -grid::Vector{Float64} values of the space grid where the functions are defined
+                -g::Vector{Float64} a vector with the values g over the grid
+                -f::Vector{Float64} a vector with the values f over the grid
+                -init_valu1::Float64 first initial value of y at grid[1]
+                -init_valu2::Float64 first initial value of y at grid[2]
                 
             
             **Output:**
-                -Vector{Float32} the function that solves the differential equation over the grid
+                -Vector{Float64} the function that solves the differential equation over the grid
 """
-    function integrate_second_order_DE(grid::Vector{Float32}, 
-        g::Vector{Float32}, f::Vector{Float32}, 
-        init_valu1::Float32, init_valu2::Float32)::Vector{Float32}
+    function integrate_second_order_DE(grid::Vector{Float64}, 
+        g::Vector{Float64}, f::Vector{Float64}, 
+        init_valu1::Float64, init_valu2::Float64)::Vector{Float64}
         
         N=size(grid)[1];
-        y0=zeros(Float32, N);#solution to differential equation
-        y1=zeros(Float32, N);#first derivative of solution to differential equation
+        y0=zeros(Float64, N);#solution to differential equation
+        y1=zeros(Float64, N);#first derivative of solution to differential equation
         y0[1]= init_valu1;
         y1[1]= (init_valu2 - init_valu1)/(grid[2]-grid[1]);
         
@@ -49,8 +49,8 @@ module IntegralNumericalMethods
     end
 
 """
-    RK4(g::Vector{Float32}, f::Vector{Float32},
-         y0::Float32, y1::Float32, h::Float32)::Vector{Float32}
+    RK4(g::Vector{Float64}, f::Vector{Float64},
+         y0::Float64, y1::Float64, h::Float64)::Vector{Float64}
 
     Returns the values for y^0 and y^1 at the point x_{i+1} using
     Runge Kutta method of order 4 to solve equations of the form
@@ -60,17 +60,17 @@ module IntegralNumericalMethods
     \frac{dy^1}{dx} = f(x)y^0(x) + g(x)
 
     **Inputs:**
-        -g::Vector{Float32} a vector with the values [g_i, g_{i+1}]
-        -f::Vector{Float32} a vector with the values [f_i, f_{i+1}]
-        -y0::Float32 value of the y^0(x_i)
-        -y1::Float32 value of the y^1(x_i)
-        -h::Float32) value of the current delta x_{i+1} - x_{i}
+        -g::Vector{Float64} a vector with the values [g_i, g_{i+1}]
+        -f::Vector{Float64} a vector with the values [f_i, f_{i+1}]
+        -y0::Float64 value of the y^0(x_i)
+        -y1::Float64 value of the y^1(x_i)
+        -h::Float64) value of the current delta x_{i+1} - x_{i}
     
     **Output:**
-        -Vector{Float32} [y^0(x_i+1) y^1(x_i+1)] the values evaluated at x_{i+1}
+        -Vector{Float64} [y^0(x_i+1) y^1(x_i+1)] the values evaluated at x_{i+1}
 """
-    function RK4(g::Vector{Float32}, f::Vector{Float32},
-         y0::Float32, y1::Float32, h::Float32)::Tuple{Float32, Float32}
+    function RK4(g::Vector{Float64}, f::Vector{Float64},
+         y0::Float64, y1::Float64, h::Float64)::Tuple{Float64, Float64}
         #1 stands for the element i in the arrays
         #2 stands for the element i+1 in the arrays
         k01=h*(y1)
@@ -92,8 +92,8 @@ module IntegralNumericalMethods
         
     end
 """
-    PCAM4(g::Vector{Float32}, f::Vector{Float32},
-        y0::Vector{Float32}, y1::Vector{Float32}, h::Float32)::Vector{Float32}
+    PCAM4(g::Vector{Float64}, f::Vector{Float64},
+        y0::Vector{Float64}, y1::Vector{Float64}, h::Float64)::Vector{Float64}
         Returns the values for y^0 and y^1 at the point x_{i} using
         predictor corrector Adams-Moulton order 4 to solve equations of the form
             \frac{d^2y}{dx^2} = f(x)y + g(x) by transforming it into a system
@@ -102,17 +102,17 @@ module IntegralNumericalMethods
             \frac{dy^1}{dx} = f(x)y^0(x) + g(x)
         
             **Inputs:**
-                -g::Vector{Float32} a vector with the values [g_{i-4}, g_{i-3}, g_{i-2}, g_{i-1}]
-                -f::Vector{Float32} a vector with the values [f_{i-4}, f_{i-3}, f_{i-2}, f_{i-1}]
-                -y0::Vector{Float32} a vector with the values [y^0_{i-4}, y^0_{i-3}, y^0_{i-2}, y^0_{i-1}]
-                -y1::Vector{Float32} a vector with the values [y^1_{i-4}, y^1_{i-3}, y^1_{i-2}, y^1_{i-1}]
-                -h::Float32) value of the current delta x_{i} - x_{i-1}
+                -g::Vector{Float64} a vector with the values [g_{i-4}, g_{i-3}, g_{i-2}, g_{i-1}]
+                -f::Vector{Float64} a vector with the values [f_{i-4}, f_{i-3}, f_{i-2}, f_{i-1}]
+                -y0::Vector{Float64} a vector with the values [y^0_{i-4}, y^0_{i-3}, y^0_{i-2}, y^0_{i-1}]
+                -y1::Vector{Float64} a vector with the values [y^1_{i-4}, y^1_{i-3}, y^1_{i-2}, y^1_{i-1}]
+                -h::Float64) value of the current delta x_{i} - x_{i-1}
             
             **Output:**
-                -Vector{Float32} [y^0(x_i) y^1(x_i)] the values evaluated at x_{i}
+                -Vector{Float64} [y^0(x_i) y^1(x_i)] the values evaluated at x_{i}
 """
-    function PCAM4(g::Vector{Float32}, f::Vector{Float32},
-        y0::Vector{Float32}, y1::Vector{Float32}, h::Float32)::Tuple{Float32, Float32}
+    function PCAM4(g::Vector{Float64}, f::Vector{Float64},
+        y0::Vector{Float64}, y1::Vector{Float64}, h::Float64)::Tuple{Float64, Float64}
 
         yp0= y0[4] + (h/24.0)*(55.0*(y1[4]) -59.0*(y1[3]) 
                                 +37.0*(y1[2]) -9.0*(y1[1]))
@@ -128,8 +128,8 @@ module IntegralNumericalMethods
     end
 
     """
-    PCABM5(g::Vector{Float32}, f::Vector{Float32},
-        y0::Vector{Float32}, y1::Vector{Float32}, h::Float32)::Vector{Float32}
+    PCABM5(g::Vector{Float64}, f::Vector{Float64},
+        y0::Vector{Float64}, y1::Vector{Float64}, h::Float64)::Vector{Float64}
         Returns the values for y^0 and y^1 at the point x_{i} using
             predictor corrector Adams-Moulton order 5 to solve equations of the form
                 \frac{d^2y}{dx^2} = f(x)y + g(x) by transforming it into a system
@@ -138,17 +138,17 @@ module IntegralNumericalMethods
                 \frac{dy^1}{dx} = f(x)y^0(x) + g(x)
             
                 **Inputs:**
-                    -g::Vector{Float32} a vector with the values [g_{i-5}, g_{i-4}, g_{i-3}, g_{i-2}, g_{i-1}]
-                    -f::Vector{Float32} a vector with the values [f_{i-5}, f_{i-4}, f_{i-3}, f_{i-2}, f_{i-1}]
-                    -y0::Vector{Float32} a vector with the values [y^0_{i-5}, y^0_{i-4}, y^0_{i-3}, y^0_{i-2}, y^0_{i-1}]
-                    -y1::Vector{Float32} a vector with the values [y^1_{i-5}, y^1_{i-4}, y^1_{i-3}, y^1_{i-2}, y^1_{i-1}]
-                    -h::Float32) value of the current delta x_{i} - x_{i-1}
+                    -g::Vector{Float64} a vector with the values [g_{i-5}, g_{i-4}, g_{i-3}, g_{i-2}, g_{i-1}]
+                    -f::Vector{Float64} a vector with the values [f_{i-5}, f_{i-4}, f_{i-3}, f_{i-2}, f_{i-1}]
+                    -y0::Vector{Float64} a vector with the values [y^0_{i-5}, y^0_{i-4}, y^0_{i-3}, y^0_{i-2}, y^0_{i-1}]
+                    -y1::Vector{Float64} a vector with the values [y^1_{i-5}, y^1_{i-4}, y^1_{i-3}, y^1_{i-2}, y^1_{i-1}]
+                    -h::Float64) value of the current delta x_{i} - x_{i-1}
                 
                 **Output:**
-                    -Vector{Float32} [y^0(x_i) y^1(x_i)] the values evaluated at x_{i}
+                    -Vector{Float64} [y^0(x_i) y^1(x_i)] the values evaluated at x_{i}
 """
-function PCABM5(g::Vector{Float32}, f::Vector{Float32},
-        y0::Vector{Float32}, y1::Vector{Float32}, h::Float32)::Tuple{Float32, Float32}
+function PCABM5(g::Vector{Float64}, f::Vector{Float64},
+        y0::Vector{Float64}, y1::Vector{Float64}, h::Float64)::Tuple{Float64, Float64}
         yp0= y0[5] + (h/720.0)*(1901.0*(y1[5]) 
                                 -2774.0*(y1[4]) +2616.0*(y1[3]) 
                                 -1274.0*(y1[2]) +251.0*(y1[1]))
