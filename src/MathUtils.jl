@@ -159,4 +159,11 @@ function error_difference(pred::Vector{Float64},targ::Vector{Float64})::Float64
     return out
 end
 
+function derivative(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
+    numerator= func[2:end] .- func[1:end-1];
+    denomiator= grid[2:end] .- grid[1:end-1];
+    out= numerator ./ denomiator
+    return out
+end
+
 end
