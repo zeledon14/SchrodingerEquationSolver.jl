@@ -5,7 +5,22 @@ using ..MathUtils
 import ..OneDSchrodingerEquationSolver as odses
 
 
+"""
+    find_eigenvalue_intervals(energy_grid::Vector{Float64}, v_effe::Vector{Float64}, 
+    grid::Vector{Float64}, initial_condition_function::Function, l::Int64 = 0)
 
+Finds the intervals (E_{min}, E_{max}) in which an eigenvalue exist
+if they exist in the given energy grid.
+
+**Inputs:**
+- `energy_grid::Vector{Float64}`: The grid of energy values to use to solve 
+                                the equation as proposed eigenvalues.
+- `v_effe::Vector{Float64}`: Effective potential to solve equation.
+- `grid::Vector{Float64}`: The space grid where the functins are deffined.
+- `initial_condition_function::Function`: Function to calculate initial values for 
+                                        Schrodinger equation.
+- `l::Int64`: Angular quantum number, deffault value 0
+"""
 function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid::Vector{Float64}, 
     initial_condition_function::Function, l::Int64=0)::Vector{Tuple{Float64,Float64}}
 
@@ -27,24 +42,32 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
 
 end
 
-function illinois_eigenvalue_finder_from_guess(E_guess::Float64,
-    E_plus::Float64, E_minu::Float64,
+function illinois_eigenvalue_finder_from_guess(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid::Vector{Float64}, 
     initial_condition_function::Function,
-    N_max::Int64=300, tolerance::Float64=10.0e-10)
+    l::Int64=0, N_max::Int64=300, tolerance::Float64=10.0e-10)::Tuple{Vector{Float64}, Float64}
     i=0
-    Ec_befo=E_guess
-    Ea=nodes[1]
-    Eb=nodes[2]
+    Ec_befo=10.0e2
+    Ea=E_interval[1]
+    Eb=E_interval[2]
     Ec=0.0
-    _, _, _, u0a, _= integrate_SE(grid,grid_bwrd,v_hart,v_xchg,v_corr,v_angu, v_ext,Ea)
-    _, _, _, u0b, _= integrate_SE(grid,grid_bwrd,v_hart,v_xchg,v_corr,v_angu, v_ext,Eb)
+    init_valu1_fwrd, init_valu2_fwrd,
+    init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
+    _, u0a= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        init_valu2_bwrd, v_effe, grid);
+    init_valu1_fwrd, init_valu2_fwrd,
+    init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
+    _, u0b= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        init_valu2_bwrd, v_effe, grid);
     while i < N_max
         Ec=(Ea*u0b -Eb*u0a)/(u0b - u0a)
         if abs(Ec-Ec_befo) < tolerance
             break
         end
-        _, _, _, u0c, _= integrate_SE(grid,grid_bwrd,v_hart,v_xchg,v_corr,v_angu, v_ext,Ec)
+        init_valu1_fwrd, init_valu2_fwrd,
+        init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
+        _, u0c= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+            init_valu2_bwrd, v_effe, grid);
         if Integer(sign(u0c)) == Integer(sign(u0a))
             Ea=float(Ec)
             u0a=float(u0c)
@@ -57,9 +80,11 @@ function illinois_eigenvalue_finder_from_guess(E_guess::Float64,
         Ec_befo=Ec
         i+=1
     end
-    u, ub, uf, _, node= integrate_SE(grid,grid_bwrd,v_hart,v_xchg,v_corr,v_angu, v_ext,Ec)
-    u= Utils.normalize(grid, u)
-    return u, ub, uf, node, Ec
+    init_valu1_fwrd, init_valu2_fwrd,
+    init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
+    u, _= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        init_valu2_bwrd, v_effe, grid);
+    return u, Ec
 end
 
 end
