@@ -53,6 +53,13 @@ function  rescale!(solution1::Vector{Float64},
     else
         solution2= (A1/A2).*solution2
     end
+    #We assume the solution 1 is always positive at solution1[1] this 
+    #has to do with the odd states, that when changing the polarity made 
+    #the search for eigenvalues harder
+    if solution1[1] < 0.0
+        solution1= (-1.0).*solution1
+        solution2= (-1.0).*solution2
+    end
     return solution1, solution2
 end
 
