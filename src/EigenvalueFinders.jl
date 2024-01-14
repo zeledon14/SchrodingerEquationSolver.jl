@@ -22,7 +22,7 @@ if they exist in the given energy grid.
 - `l::Int64`: Angular quantum number, deffault value 0
 """
 function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid::Vector{Float64}, 
-    initial_condition_function::Function, l::Int64=0)::Vector{Tuple{Float64,Float64}}
+    initial_condition_function::Function, l::Int64=0)::Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
 
     E_N= size(energy_grid)[1]
     merg_valu_of_E=zeros(Float64, E_N);
@@ -36,8 +36,14 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
         merg_valu_of_E[i]=merge_value;
     end
     ener_indx= MathUtils.indices_of_zeros_finder(merg_valu_of_E);
-    out=[(energy_grid[i], energy_grid[i+1]) for (i) in ener_indx]
-    return out
+    #check that merg_valu_of_E is_continuous_enough around 
+
+
+    good_intervals=[(energy_grid[i], energy_grid[i+1]) for i in ener_indx if MathUtils.is_continuous_enough(merg_valu_of_E, i, E_N)]
+    bad_intervals=[(energy_grid[i], energy_grid[i+1]) for i in ener_indx if MathUtils.is_continuous_enough(merg_valu_of_E, i, E_N) == false]
+
+
+    return good_intervals, bad_intervals
 
 
 end
