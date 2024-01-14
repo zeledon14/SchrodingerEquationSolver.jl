@@ -166,10 +166,26 @@ function error_difference(pred::Vector{Float64},targ::Vector{Float64})::Float64
     return out
 end
 
+
 function derivative(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
     numerator= func[2:end] .- func[1:end-1];
     denomiator= grid[2:end] .- grid[1:end-1];
     out= numerator ./ denomiator
+    return out
+end
+
+function is_continuous_enough(func::Vector{Float64}, 
+                              indx::Int64, N_max::Int64)::Bool
+    out::Bool=false
+    if indx > 1 && (indx + 2) <= N_max
+        if abs(func[indx+1]-func[indx]) < 
+            0.5*(abs(func[indx+1]-func[indx+2]) + abs(func[indx]-func[indx-1]));
+            out= true
+        end
+    else
+        throw(DomainError("indx to close to ends for continuoity conditions
+        to be checked"));
+    end
     return out
 end
 
