@@ -48,7 +48,7 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
 
 end
 
-function illinois_eigenvalue_finder_from_guess(E_interval::Tuple{Float64, Float64},
+function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid::Vector{Float64}, 
     initial_condition_function::Function,
     l::Int64=0, N_max::Int64=300, tolerance::Float64=10.0e-10)::Tuple{Vector{Float64}, Float64}
