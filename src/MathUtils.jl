@@ -179,8 +179,9 @@ function is_continuous_enough(func::Vector{Float64},
     out::Bool=false
     if indx > 1 && (indx + 2) <= N_max
         if abs(func[indx+1]-func[indx]) < 
-            0.5*(abs(func[indx+1]-func[indx+2]) + abs(func[indx]-func[indx-1]));
+            0.51*(abs(func[indx+1]-func[indx+2]) + abs(func[indx]-func[indx-1]));
             out= true
+            #the 0.51 gives some space for a continuos enough check, change for a better method
         end
     else
         throw(DomainError("indx to close to ends for continuoity conditions
