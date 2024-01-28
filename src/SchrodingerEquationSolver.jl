@@ -7,5 +7,6 @@ include("IntegralNumericalMethods.jl");
 include("OneDSchrodingerEquationSolver.jl");
 include("InitialConditions.jl");
 include("EigenvalueFinders.jl");
+include("AtomBasisSet.jl");
 include("Hydrogen.jl");
 end
