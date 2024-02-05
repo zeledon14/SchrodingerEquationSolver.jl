@@ -24,7 +24,7 @@ end
 function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     file= open("../data/atomic_numbers.json");
     atomic_numbers= JSON3.read(file);
-    N::Int64=sizeof(grid)[1];
+    N::Int64=size(grid)[1];
     electron_capacity::Int64=0;
     numb_orbitals::Int64=0
     remaining_electrons::Int64= Int64(Z)

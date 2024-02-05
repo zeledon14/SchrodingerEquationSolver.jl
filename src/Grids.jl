@@ -17,12 +17,11 @@ module Grids
     
     """
     function exponential_grid(r_max::Float64, Z::Int64)::Vector{Float64}
-        a=(4.34*10.0^(-6.0))/Z
+        a=(4.34e-6)/Float64(Z)
         b=0.002304
         
-        N=Integer(ceil(log((r_max/a)+1.0)/b))
-
-        exp_grid= [a*(exp(b*i) -1.0) for i = 1:(N+1)]
+        N=((log((r_max/a)+1.0)/b))
+        exp_grid= [a*(exp(b*i) -1.0) for i = 1.0:(N+1.0)]
         return exp_grid 
     end
 

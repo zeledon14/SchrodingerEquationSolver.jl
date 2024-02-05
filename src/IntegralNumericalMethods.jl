@@ -37,12 +37,12 @@ module IntegralNumericalMethods
         for i in 1:4
         #for i in 1:(N-1)
             h= grid[i+1] - grid[i];
-            y0[i+1], y1[i+1]= RK4(g,f[i:i+1],y0[i], y1[i],h);
+            y0[i+1], y1[i+1]= RK4(g[i:i+1],f[i:i+1],y0[i], y1[i],h);
         end
         #integration loop using prediction correction adams moulton degree 5
         for i in 6:N
             h= grid[i] - grid[i-1];
-            y0[i], y1[i]= PCABM5(g,f[i-5:i],y0[i-5:i-1], y1[i-5:i-1],h);
+            y0[i], y1[i]= PCABM5(g[i-5:i],f[i-5:i],y0[i-5:i-1], y1[i-5:i-1],h);
         end
         
         return y0
