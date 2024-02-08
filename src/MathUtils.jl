@@ -127,8 +127,12 @@ I= sum 0.5*(func(x_{i+1})+func(x_{i}))*(x_{i+1} - x_{i})
 - `grid::Vector{Float64}`: grid where the function is defined
 """
 function integral(func::Vector{Float64},grid::Vector{Float64})::Float64
+    #temp=grid[2:end] .- grid[1:end-1];
+    #temp1=func[2:end] .+ func[1:end-1];
+    #I= temp.*temp1
+    #I= 0.5*I
     I= 0.5.*(grid[2:end] .- grid[1:end-1]).*(func[2:end] .+ func[1:end-1])
-    I= sum(I)
+    I= 0.5*sum(I)
     return I
 end
 
