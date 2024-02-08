@@ -6,7 +6,7 @@ function  calculate_density(basis_set::Any)::Vector{Float64}
     density::Vector{Float64}= zero(basis_set.grid)
     grid::Vector{Float64}= basis_set.grid
     for i_orbi in basis_set.orbitals
-        c= i_orbi.occu/(4.0*pi)
+        c= i_orbi.occu
         density .= density .+ c.*(i_orbi.u.^2.0)./(grid.^2.0)
     end
     return density
