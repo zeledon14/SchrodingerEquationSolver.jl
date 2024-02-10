@@ -6,4 +6,5 @@ using Test
     include("OneDSchrodingerEquationSolverTest.jl")
     include("HarmincOcillatorEigenStatesSearchTest.jl")
     include("uS1HydrogenHartreeTest.jl")
+    include("HeTest.jl")
 end
