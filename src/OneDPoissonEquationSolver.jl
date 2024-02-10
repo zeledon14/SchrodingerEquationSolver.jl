@@ -30,7 +30,8 @@ raw"""
 function solver(Z::Int64, density::Vector{Float64},
     grid::Vector{Float64})::Vector{Float64}
 
-    g::Vector{Float64}=-4.0.*pi.*density.*grid;
+    g::Vector{Float64}=(-4.0*pi).*density.*grid;
+    #g::Vector{Float64}=(-1).*density.*grid;
     f::Vector{Float64}= zeros(Float64, size(g)[1]);
     init_valu1_fwrd::Float64=Float64(grid[1])
     init_valu2_fwrd::Float64=Float64(grid[2])

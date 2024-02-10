@@ -131,8 +131,8 @@ function integral(func::Vector{Float64},grid::Vector{Float64})::Float64
     #temp1=func[2:end] .+ func[1:end-1];
     #I= temp.*temp1
     #I= 0.5*I
-    I= 0.5.*(grid[2:end] .- grid[1:end-1]).*(func[2:end] .+ func[1:end-1])
-    I= 0.5*sum(I)
+    I= 0.5*sum((grid[2:end] .- grid[1:end-1]).*(func[2:end] .+ func[1:end-1]))
+    #I= 0.5*sum(I)
     return I
 end
 

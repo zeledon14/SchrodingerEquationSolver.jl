@@ -51,7 +51,7 @@ end
 function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid::Vector{Float64}, 
     initial_condition_function::Function,
-    l::Int64=0, N_max::Int64=500, tolerance::Float64=10.0e-12)::Tuple{Vector{Float64}, Float64}
+    l::Int64=0, N_max::Int64=1000, tolerance::Float64=10.0e-12)::Tuple{Vector{Float64}, Float64}
     i=0
     Ec_befo=10.0e2
     Ea=E_interval[1]
@@ -78,10 +78,12 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
             Ea=float(Ec)
             u0a=float(u0c)
             u0b=0.5*u0b
+            #println(" 1  ", Ec)
         else
             Eb=float(Ec)
             u0b=float(u0c)
             u0a=0.5*u0a
+            #println(" 2  ", Ec)
         end
         Ec_befo=Ec
         i+=1
