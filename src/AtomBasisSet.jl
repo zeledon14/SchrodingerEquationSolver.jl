@@ -4,7 +4,21 @@ using AutomaticDocstrings
 module AtomBasisSet
 using JSON3
 
-    
+"""
+    orbital
+
+    Structure to hold information about a given radial orbital
+
+# Fields:
+- `n::Int64`: principal quantum number.
+- `l::Int64`: orbital quantum number.
+- `name::String`: orbital name.
+- `E::Float64`: energy eigenvalue of the orbital .
+- `occu::Float64`: number of electrons in the radial orbital.
+- `u::Vector{Float64}`: related to the solution of the radial Schrodinger 
+                        equation u = r (\Psi), where \Psi is the solution 
+                        of the Schrodinger equation.
+"""
 mutable struct orbital
     n::Int64;
     l::Int64;
@@ -13,14 +27,30 @@ mutable struct orbital
     occu::Float64;
     u:: Vector{Float64};
 end
+"""
+    atom_basis_set
 
+    Structure to hold a list of orbitals and grid making a basis set.
+
+# Fields:
+- `grid::Vector{Float64}`: A list with the space points.
+- `orbitals::Array{orbital}`: A list with the orbitals in the basis set.
+"""
 mutable struct atom_basis_set
     grid::Vector{Float64}
     orbitals::Array{orbital}
 end
 
 
+"""
+    init_atom_basis_set(Z::Int64, grid::Vector{Float64})
 
+DOCSTRING
+
+**Inputs:**
+- `Z::Int64`: Atomic number of the element.
+- `grid::Vector{Float64}`: A list with the space points.
+"""
 function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     file= open("../data/atomic_numbers.json");
     atomic_numbers= JSON3.read(file);
