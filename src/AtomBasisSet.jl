@@ -5,9 +5,11 @@ module AtomBasisSet
 using JSON3
 
 """
-    orbital
+   orbital
 
-    Structure to hold information about a given radial orbital
+
+   Structure to hold information about a given radial orbital
+
 
 # Fields:
 - `n::Int64`: principal quantum number.
@@ -15,9 +17,9 @@ using JSON3
 - `name::String`: orbital name.
 - `E::Float64`: energy eigenvalue of the orbital .
 - `occu::Float64`: number of electrons in the radial orbital.
-- `u::Vector{Float64}`: related to the solution of the radial Schrodinger 
-                        equation u = r (\Psi), where \Psi is the solution 
-                        of the Schrodinger equation.
+- `u::Vector{Float64}`: related to the solution of the radial Schrodinger
+                       equation u = r (Psi), where Psi is the solution
+                       of the Schrodinger equation.
 """
 mutable struct orbital
     n::Int64;
@@ -28,9 +30,11 @@ mutable struct orbital
     u:: Vector{Float64};
 end
 """
-    atom_basis_set
+   atom_basis_set
 
-    Structure to hold a list of orbitals and grid making a basis set.
+
+   Structure to hold a list of orbitals and grid making a basis set.
+
 
 # Fields:
 - `grid::Vector{Float64}`: A list with the space points.
@@ -41,12 +45,8 @@ mutable struct atom_basis_set
     orbitals::Array{orbital}
 end
 
-
 """
-    init_atom_basis_set(Z::Int64, grid::Vector{Float64})
-
-DOCSTRING
-
+   init_atom_basis_set(Z::Int64, grid::Vector{Float64})
 **Inputs:**
 - `Z::Int64`: Atomic number of the element.
 - `grid::Vector{Float64}`: A list with the space points.
