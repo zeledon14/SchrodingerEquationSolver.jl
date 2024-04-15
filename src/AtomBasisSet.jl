@@ -29,6 +29,12 @@ mutable struct orbital
     occu::Float64;
     u:: Vector{Float64};
 end
+
+function orbital_to_dict(in_orbital::orbital)
+    out= Dict(fieldnames(orbital) .=> getfield.(Ref(in_orbital), 
+                                            fieldnames(orbital)));
+    return out
+end
 """
    atom_basis_set
 
@@ -87,4 +93,14 @@ function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     return atom_basis_set(grid,orbitals)
     
 end
+
+function save_basis_set(in_basis::atom_basis_set, save_path::String)
+    orbitals= JSON3.write([orbital_to_dict(i_orbi) for i_orbi in in_basis.orbitals]);
+    out= JSON3.write(Dict{String, String}("grid"=>JSON3.write(in_basis.grid),
+                             "orbitals"=>orbitals));
+    open(save_path,"w") do f 
+        write(f, out) 
+    end 
+end
+
 end
