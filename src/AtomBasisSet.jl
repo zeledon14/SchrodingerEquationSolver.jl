@@ -61,7 +61,7 @@ function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     file= open("../data/atomic_numbers.json");
     atomic_numbers= JSON3.read(file);
     N::Int64=size(grid)[1];
-    electron_capacity::Int64=0;
+    #electron_capacity::Int64=0;
     numb_orbitals::Int64=0
     remaining_electrons::Int64= Int64(Z)
     #finding number of orbitals needed
@@ -94,14 +94,7 @@ function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     
 end
 
-function save_basis_set(in_basis::atom_basis_set, save_path::String)
-    #orbitals= JSON3.write([orbital_to_dict(i_orbi) for i_orbi in in_basis.orbitals]);
-    #out= JSON3.write(Dict{String, String}("grid"=>JSON3.write(in_basis.grid),
-    #                         "orbitals"=>orbitals));
-    #open(save_path,"w") do f 
-    #    write(f, out) 
-    #end
-    
+function save_basis_set(in_basis::atom_basis_set, save_path::String)    
     orbitals= [orbital_to_dict(i_orbi) for i_orbi in in_basis.orbitals];
     out= JSON3.write(Dict{String, Any}("grid"=>in_basis.grid,
                              "orbitals"=>orbitals));
@@ -109,5 +102,7 @@ function save_basis_set(in_basis::atom_basis_set, save_path::String)
         write(f, out) 
     end 
 end
-
+function load_basis_set_from_json(path::String)
+    return temp= JSON3.read(path, atom_basis_set);
+end
 end

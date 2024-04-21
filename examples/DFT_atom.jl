@@ -14,11 +14,16 @@ import .ses.AtomBasisSet as AtomBasisSet
 import .ses.Density as Density
 import .ses.ExchangeCorrelation as ExchangeCorrelation
 
+#***************************************************#
+#to run use                                         #
+#julia --project ../examples/DFT_atom.jl            #
+#***************************************************#
+
 #Define parameters and produce an exponential grid.
 r_max::Float64=50.0;#Max radius of space grid.
-Z::Int64=2;#Atomic number, also used as the charge of coulomb potential.
-b::Float64=0.001004; #By decreasing b the number of points in the grid increase.
-grid= ses.Grids.exponential_grid(r_max, Z, b);
+Z::Int64=6;#Atomic number, also used as the charge of coulomb potential.
+#b::Float64=0.001004; #By decreasing b the number of points in the grid increase.
+grid= ses.Grids.exponential_grid(r_max, Z)#, b);
 grid_sqrt= grid.^2.0; 
 N= size(grid)[1]; #Number of points in the grid.
 
@@ -107,7 +112,7 @@ let
 
     println("total energy ", E_total)
 
-    save_path="../save_basis_set/test_write_basis.json";
+    save_path="../save_basis_set/basis_Z_$(string(Z))_E_$(string(E_total)).json";
     AtomBasisSet.save_basis_set(basis, save_path);
 
 end
