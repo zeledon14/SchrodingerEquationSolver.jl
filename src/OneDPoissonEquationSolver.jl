@@ -38,7 +38,7 @@ function solver(Z::Int64, density::Vector{Float64},
 
 
     #do forward integration of poisson to get U_hartree
-    U_hartree= IntegralNumericalMethods.integrate_second_order_DE(grid,g,f,
+    U_hartree= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
     init_valu1_fwrd,init_valu2_fwrd);
     #set boudary condtion over U_hartree
     a= (Z - U_hartree[end])/grid[end]

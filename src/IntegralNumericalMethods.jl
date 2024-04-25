@@ -1,7 +1,7 @@
 module IntegralNumericalMethods
 
     """
-    integrate_second_order_DE(grid::Vector{Float64}, 
+    integrate_second_order_DE_RK4_PCABM5(grid::Vector{Float64}, 
         g::Vector{Float64}, f::Vector{Float64}, 
         init_valu1::Float64, init_valu2::Float64)::Vector{Float64}
 
@@ -24,7 +24,7 @@ module IntegralNumericalMethods
             **Output:**
                 -Vector{Float64} the function that solves the differential equation over the grid
 """
-    function integrate_second_order_DE(grid::Vector{Float64}, 
+    function integrate_second_order_DE_RK4_PCABM5(grid::Vector{Float64}, 
         g::Vector{Float64}, f::Vector{Float64}, 
         init_valu1::Float64, init_valu2::Float64)::Vector{Float64}
         

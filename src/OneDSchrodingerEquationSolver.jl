@@ -44,10 +44,10 @@ function solver(E::Float64,init_valu1_fwrd::Float64,
     end
 
     #do forward integration of radial shcrodinger equation u
-    u_fwd= IntegralNumericalMethods.integrate_second_order_DE(grid,g,f,
+    u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
     init_valu1_fwrd,init_valu2_fwrd);
     #do backward integreation of the radial shcrodinger equation u 
-    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE(reverse(grid),g,reverse(f),
+    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(reverse(grid),g,reverse(f),
     init_valu1_bwrd,init_valu2_bwrd));
     #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
     u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
