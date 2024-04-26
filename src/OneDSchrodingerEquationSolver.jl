@@ -30,7 +30,7 @@ raw"""
 function solver(E::Float64,init_valu1_fwrd::Float64,
     init_valu2_fwrd::Float64, init_valu1_bwrd::Float64,
     init_valu2_bwrd::Float64, v_effe::Vector{Float64},
-    grid::Vector{Float64})::Tuple{Vector{Float64},Float64}
+    grid::Vector{Float64}, integrador_type::String="RK4_PCABM5")::Tuple{Vector{Float64},Float64}
 
     f::Vector{Float64}= 2.0.*(v_effe .- E);
     g=zeros(Float64, size(f)[1]);
@@ -42,13 +42,20 @@ function solver(E::Float64,init_valu1_fwrd::Float64,
         throw(DomainError("the effective potential has no turning points 
         for the proposed energy eigenvalue, this means v_effe - E has no zeroes"));
     end
-
-    #do forward integration of radial shcrodinger equation u
-    u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
-    init_valu1_fwrd,init_valu2_fwrd);
-    #do backward integreation of the radial shcrodinger equation u 
-    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(reverse(grid),g,reverse(f),
-    init_valu1_bwrd,init_valu2_bwrd));
+    if integrador_type == "RK4_PCABM5"
+        #do forward integration of radial shcrodinger equation u
+        u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
+        init_valu1_fwrd,init_valu2_fwrd);
+        #do backward integreation of the radial shcrodinger equation u 
+        u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(reverse(grid),g,reverse(f),
+        init_valu1_bwrd,init_valu2_bwrd));
+    elseif integrador_type == "Numerov"
+        u_fwd= IntegralNumericalMethods.integrate_second_order_DE_Numerov(grid,g,f,
+        init_valu1_fwrd,init_valu2_fwrd);
+        #do backward integreation of the radial shcrodinger equation u 
+        u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_Numerov(reverse(grid),g,reverse(f),
+        init_valu1_bwrd,init_valu2_bwrd));
+    end
     #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
     u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
     #merge solutions

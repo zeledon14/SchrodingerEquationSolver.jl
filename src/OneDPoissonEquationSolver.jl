@@ -28,7 +28,7 @@ raw"""
 """
 
 function solver(Z::Int64, density::Vector{Float64},
-    grid::Vector{Float64})::Vector{Float64}
+    grid::Vector{Float64}, integrador_type::String="RK4_PCABM5")::Vector{Float64}
 
     g::Vector{Float64}=(-4.0*pi).*density.*grid;
     #g::Vector{Float64}=(-1).*density.*grid;
@@ -36,10 +36,15 @@ function solver(Z::Int64, density::Vector{Float64},
     init_valu1_fwrd::Float64=Float64(grid[1])
     init_valu2_fwrd::Float64=Float64(grid[2])
 
-
-    #do forward integration of poisson to get U_hartree
-    U_hartree= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
-    init_valu1_fwrd,init_valu2_fwrd);
+    if integrador_type == "RK4_PCABM5"
+        #do forward integration of poisson to get U_hartree
+        U_hartree= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
+        init_valu1_fwrd,init_valu2_fwrd);
+    elseif integrador_type == "Numerov"
+        #do forward integration of poisson to get U_hartree
+        U_hartree= IntegralNumericalMethods.integrate_second_order_DE_Numerov(grid,g,f,
+        init_valu1_fwrd,init_valu2_fwrd);
+    end
     #set boudary condtion over U_hartree
     a= (Z - U_hartree[end])/grid[end]
     U_hartree= U_hartree .+ a.*grid
