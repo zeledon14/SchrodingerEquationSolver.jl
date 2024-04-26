@@ -48,6 +48,25 @@ module IntegralNumericalMethods
         return y0
     end
 
+    function integrate_second_order_DE_Numerov(grid::Vector{Float64}, 
+        g::Vector{Float64}, f::Vector{Float64}, 
+        init_valu1::Float64, init_valu2::Float64)::Vector{Float64}
+        
+        N=size(grid)[1];
+        y0=zeros(Float64, N);#solution to differential equation
+
+        y0[1]= init_valu1;
+        y0[2]= init_valu2
+        
+        #for i in 1:4
+        for i in 3:(N-2)
+            h= grid[i+1] - grid[i];
+            y0[i],= Numerov(g[i-1],f[i-1],y0[i-2:i-1],h);
+        end
+        
+        return y0
+    end
+
 """
     RK4(g::Vector{Float64}, f::Vector{Float64},
          y0::Float64, y1::Float64, h::Float64)::Vector{Float64}
@@ -169,5 +188,12 @@ function PCABM5(g::Vector{Float64}, f::Vector{Float64},
 
         return yc0, yc1
     end
+
+    function Numerov(g::Float64, f::Float64,
+        y0::Vector{Float64}, h::Float64)::Float64
+        yp= (y0[2] + (h^2.0)*g/12.0)/(1.0 - (h^2.0)*f/12.0)
+        y0_out= 2.0*y0[2] - y0[1] + (h^2.0)*(f*yp + g)
+       return y0_out  
+   end
 
 end
