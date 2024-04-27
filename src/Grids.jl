@@ -16,7 +16,7 @@ module Grids
             of elements in the grid is control internaly.
     
     """
-    function exponential_grid(r_max::Float64, Z::Int64, 
+    function exponential_grid(r_max::Float64, Z::Int64; 
                               b::Float64=0.002304)::Vector{Float64}
         a=(4.34e-6)/Float64(Z)
         #b=0.002304
