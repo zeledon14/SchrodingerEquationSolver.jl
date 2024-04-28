@@ -47,4 +47,12 @@ module Grids
         grid= [r_min + i*delta for i=0:(N-1)];
         return grid;
     end
+
+    function simple_exponential_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
+        c::Float64=r_max/r_min
+        grid= [r_min*c^(i/N) for i=0:(N-1)];
+        return grid;
+    end
+
+
 end
