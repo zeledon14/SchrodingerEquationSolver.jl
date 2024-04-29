@@ -47,6 +47,10 @@ end
 - `orbitals::Array{orbital}`: A list with the orbitals in the basis set.
 """
 mutable struct atom_basis_set
+    Energy::Float64
+    E_hartree::Float64
+    E_xc::Float64
+    V_xc::Float64
     grid::Vector{Float64}
     orbitals::Array{orbital}
 end
@@ -89,20 +93,30 @@ function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
         end
 
     end
-
-    return atom_basis_set(grid,orbitals)
+    #Initial values
+    Energy::Float64=0.0
+    E_hartree::Float64=0.0
+    E_xc::Float64=0.0
+    V_xc::Float64=0.0
+    return atom_basis_set(Energy,E_hartree,
+                            E_xc,V_xc,
+                            grid,orbitals)
     
 end
 
 function save_basis_set(in_basis::atom_basis_set, save_path::String)    
     orbitals= [orbital_to_dict(i_orbi) for i_orbi in in_basis.orbitals];
     out= JSON3.write(Dict{String, Any}("grid"=>in_basis.grid,
+                             "Energy"=>in_basis.Energy,
+                             "E_hartree"=>in_basis.E_hartree,
+                             "E_xc"=>in_basis.E_xc,
+                             "V_xc"=>in_basis.grid,
                              "orbitals"=>orbitals));
     open(save_path,"w") do f 
         write(f, out) 
     end 
 end
 function load_basis_set_from_json(path::String)
-    return temp= JSON3.read(path, atom_basis_set);
+    return JSON3.read(path, atom_basis_set);
 end
 end
