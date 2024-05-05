@@ -28,7 +28,7 @@ import .ses.Density as Density
         E_grid= Grids.uniform_grid(i_orbi.E - 0.1*i_orbi.E, i_orbi.E + 0.05*i_orbi.E, 50);
 
         E_intervals, bad_intervals= EigenvalueFinders.find_eigenvalue_intervals(E_grid, v_effe,
-                                                        grid,InitialConditions.atom, i_orbi.l);
+                                                        grid,InitialConditions.atom; i_orbi.l);
         u_temp, ei_temp= EigenvalueFinders.illinois_eigenvalue_finder(E_intervals[1], v_effe, grid,InitialConditions.atom);
         i_orbi.E=ei_temp
         i_orbi.u=u_temp

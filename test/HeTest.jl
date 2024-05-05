@@ -17,7 +17,7 @@ import .ses.ExchangeCorrelation as ExchangeCorrelation
         
     r_max::Float64=50.0;
     Z::Int64=2;
-    grid= ses.Grids.exponential_grid(r_max, Z, 0.001504);
+    grid= ses.Grids.exponential_grid(r_max, Z; b=0.001504);
     grid_sqrt= grid.^2.0;
     N= size(grid)[1];
 
@@ -51,7 +51,7 @@ import .ses.ExchangeCorrelation as ExchangeCorrelation
             E_grid= Grids.uniform_grid(i_orbi.E - 0.5*i_orbi.E, i_orbi.E + 0.5*i_orbi.E, 150);
     
             E_intervals, bad_intervals= EigenvalueFinders.find_eigenvalue_intervals(E_grid, V_effe,
-                                                            grid,InitialConditions.atom, i_orbi.l);
+                                                            grid,InitialConditions.atom; i_orbi.l);
 
             u_temp, ei_temp= EigenvalueFinders.illinois_eigenvalue_finder(E_intervals[1], V_effe, grid,InitialConditions.atom);
             i_orbi.E=ei_temp

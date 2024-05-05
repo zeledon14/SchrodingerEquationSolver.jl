@@ -30,7 +30,7 @@ raw"""
 function solver(E::Float64,init_valu1_fwrd::Float64,
     init_valu2_fwrd::Float64, init_valu1_bwrd::Float64,
     init_valu2_bwrd::Float64, v_effe::Vector{Float64},
-    grid::Vector{Float64}, integrador_type::String="RK4_PCABM5")::Tuple{Vector{Float64},Float64}
+    grid::Vector{Float64}, integrador_type::String="RK4_PCABM5")::Tuple{Vector{Float64},Float64, Int64}
 
     f::Vector{Float64}= 2.0.*(v_effe .- E);
     g=zeros(Float64, size(f)[1]);
@@ -61,7 +61,7 @@ function solver(E::Float64,init_valu1_fwrd::Float64,
     #merge solutions
     u_merged, merge_value= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
     u_merged= MathUtils.normalize!(u_merged, grid);
-    return u_merged, merge_value
+    return u_merged, merge_value, turn_pnts[1]
 end
 
 end

@@ -32,7 +32,7 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
         init_valu1_fwrd, init_valu2_fwrd,
         init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, ei, l);
 
-        u_merged, merge_value= odses.solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        u_merged, merge_value, turn_pnt= odses.solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid, integrador_type);
         merg_valu_of_E[i]=merge_value;
     end
@@ -53,7 +53,7 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid::Vector{Float64}, 
     initial_condition_function::Function;
     l::Int64=0, 
-    N_max::Int64=1000, tolerance::Float64=10.0e-12,
+    N_max::Int64=2000, tolerance::Float64=10.0e-12,
     integrador_type::String="RK4_PCABM5")::Tuple{Vector{Float64}, Float64}
     i=0
     Ec_befo=10.0e2
@@ -62,11 +62,11 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     Ec=0.0
     init_valu1_fwrd, init_valu2_fwrd,
     init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
-    _, u0a= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+    _, u0a, turn_pnt= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid,integrador_type);
     init_valu1_fwrd, init_valu2_fwrd,
     init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
-    _, u0b= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+    _, u0b, turn_pnt= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid,integrador_type);
     while i < N_max
         Ec=(Ea*u0b -Eb*u0a)/(u0b - u0a)
@@ -75,7 +75,7 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
         end
         init_valu1_fwrd, init_valu2_fwrd,
         init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
-        _, u0c= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        _, u0c, turn_pnt= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
             init_valu2_bwrd, v_effe, grid,integrador_type);
         if Integer(sign(u0c)) == Integer(sign(u0a))
             Ea=float(Ec)
@@ -93,8 +93,32 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     end
     init_valu1_fwrd, init_valu2_fwrd,
     init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
-    u, _= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+    u, _, turn_pnt= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid,integrador_type);
+    return u, Ec
+end
+
+function perturbation(E_in::Float64,
+    v_effe::Vector{Float64}, grid::Vector{Float64}, 
+    initial_condition_function::Function;
+    l::Int64=0, 
+    N_max::Int64=2000, tolerance::Float64=10.0e-12,
+    integrador_type::String="RK4_PCABM5")::Tuple{Vector{Float64}, Float64}
+    i=0
+    N= size(grid)[1]; #Number of points in the grid.
+    Ec_befo=10.0e2;
+    Ec= Float64(E_in);
+    u::Vector{Float64}= zeros(Float64, N);
+    while abs(Ec-Ec_befo) > tolerance || i < N_max
+        init_valu1_fwrd, init_valu2_fwrd,
+        init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
+        u, merg_valu, turn_pnt= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        init_valu2_bwrd, v_effe, grid,integrador_type);
+        Ec_befo= Ec;
+        Ec= Ec_befo + u[turn_pnt]*merg_valu;
+        i+=1
+        #println(Ec)
+    end
     return u, Ec
 end
 
