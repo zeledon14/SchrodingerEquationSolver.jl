@@ -194,4 +194,20 @@ function is_continuous_enough(func::Vector{Float64},
     return out
 end
 
+function find_turning_point(func::Vector{Float64}, pote_turn_pnts::Vector{Int64})::Int64
+    N=size(pote_turn_pnts)[1];
+    temp_turn_pnts=zeros(Int64, 3*N);
+    temp_func=zeros(Float64, 3*N);
+    for (i,fi) in enumerate(pote_turn_pnts)
+
+        temp_turn_pnts[3*i-2]= fi-1;
+        temp_turn_pnts[3*i-1]= fi;
+        temp_turn_pnts[3*i]= fi+1;
+        temp_func[3*i-2]= abs(func[fi-1]);
+        temp_func[3*i-1]= abs(func[fi]);
+        temp_func[3*i]= abs(func[fi+1]);
+    end
+    return temp_turn_pnts[argmin(temp_func)]
+end
+
 end

@@ -38,10 +38,14 @@ function solver(E::Float64,init_valu1_fwrd::Float64,
     #find turn_pnts of of f, basically the clasical turning points of the effective density_potential
     #with restepect to the E proposed eigenvalue
     turn_pnts= MathUtils.indices_of_zeros_finder(f);
+    #println("propose energy of turning point", 0.5*f[turn_pnts[1]])
     if length(turn_pnts) ==  0
         throw(DomainError("the effective potential has no turning points 
         for the proposed energy eigenvalue, this means v_effe - E has no zeroes"));
     end
+    turn_pnt= MathUtils.find_turning_point(f,turn_pnts);
+    #println(turn_pnt)
+    #println("propose energy of turning point after correction", 0.5*f[turn_pnt])
     if integrador_type == "RK4_PCABM5"
         #do forward integration of radial shcrodinger equation u
         u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
@@ -57,11 +61,11 @@ function solver(E::Float64,init_valu1_fwrd::Float64,
         init_valu1_bwrd,init_valu2_bwrd));
     end
     #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
-    u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
+    u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnt);
     #merge solutions
-    u_merged, merge_value= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
-    u_merged= MathUtils.normalize!(u_merged, grid);
-    return u_merged, merge_value, turn_pnts[1]
+    u_merged, merge_value= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnt);
+    #u_merged= MathUtils.normalize!(u_merged, grid);
+    return u_merged, merge_value, turn_pnt
 end
 
 end

@@ -1,0 +1,153 @@
+\documentclass[11pt]{article}
+
+\usepackage{sectsty}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\title{ Neutral Atom Solver}
+\author{ Arturo Hernandez Zeledon }
+\date{1 November 2023}
+
+\begin{document}
+\maketitle	
+\pagebreak
+
+% Optional TOC
+% \tableofcontents
+% \pagebreak
+
+%--Paper--
+
+\section{Units}
+This code uses Hartree units where $\frac{\hbar^2}{m_e} = e = 4\pi\epsilon_0 = 1$. $m_e$
+is the mass of the electron
+
+\section{Grids}
+
+\subsection{Uniform Grid}
+
+
+\subsection{Exponential Grid}
+
+
+\pagebreak
+\section{Second Order Differential Equation Solver}
+This section focus on solving two differential equations: Schrödinger's equation for one dimensional
+systems (including radial potentials for DFT atomic calculations), and 
+Poisson's equation, we are then interested on numerically solving equations of the form:
+ be written as:
+ \begin{equation}
+    \label{eqn:general_second_order_diff}
+    \frac{d^2y}{dx^2} = f(x)y + g(x)
+ \end{equation}
+
+The first step to numerically solving this equation is by rewriting it as a system of linear differential 
+equations such that $y(x) \rightarrow y^0(x),$ $\frac{dy(x)}{dx} \rightarrow y^1(x)$ such that equations 
+\ref*{eqn:general_second_order_diff} became:
+\begin{equation}
+    \begin{cases}
+        \label{eqn:system_linear_diff}
+        \frac{dy^0}{dx} = y^1(x) \\
+        \frac{dy^1}{dx} = f(x)y^0(x) + g(x)
+    \end{cases}
+\end{equation}
+This system of equations can be solved with method like Runge-Kutta order 4 and/or predictor corrector
+Adams-Moulton order 4.\\
+To numerically solve the equations \ref*{eqn:system_linear_diff} the system must be translated into 
+ discrete sets of values. First by discretizing the space, into a grid of $N$ values such that $x_i$ is the 
+ value of the grid at position "i". The functions are also discrete $f_i \rightarrow f(x_i)$ stands by evaluating
+ a function $f$ on the "i" position of the grid. And "$h$" stands for the delta between to consecutive points on the grid
+ $h = x_{i+1} - x_{i}$, the grid points are not necessarily uniformly distributed. The objective is to find the $N$ values of
+ $y$ over the grid, for a numerical solution the values of $y(x_1)$ and $y(x_2)$ must be known.
+ \subsection*{Runge-Kutta order 4}
+This subsection describes how a function (RK4) utilizes the Runge-Kutta order 4 method to produce the values $y^0(x_{i+1})$, and 
+$y^1(x_{i+1})$.
+%
+%taking as inputs;  $h_{in} = x_{i+1} - x_{i}$, $f[i : i+1] \rightarrow [f(x_i), f(x_{i+1})] \rightarrow \vec{f}$, 
+% $g[i : i+1] \rightarrow [g(x_i), g(x_{i+1})] \rightarrow \vec{g}$, and $y^0(x_{i})$, $y^1(x_{i})$:
+ \begin{algorithmic}
+    \State $h \gets (x_{i+1} - x_{i})$
+    \State $ y^0 \gets y^0(x_{i})$
+    \State $ y^1 \gets y^1(x_{i})$
+    \State $\bar{f} \gets [f(x_i), f(x_{i+1})]$
+    \State $\bar{g} \gets [g(x_i), g(x_{i+1})]$
+    \State $k_{01} = h*y^1$
+    \State $k_{11} = h*(\bar{f}[1]*y^0 + \bar{g}[1])$
+    \State $k_{02} = h*(y^1 + 0.5*k_{11})$
+    \State $k_{12} = h[*0.5*(\bar{f}[1] + \bar{f}[2])*(y^0 + 0.5*k_{01}) + 0.5*(\bar{g}[1] + \bar{g}[2])]$
+    \State $k_{03} = h*(y^1 + 0.5*k_{12})$
+    \State $k_{13} = h[*0.5*(\bar{f}[1] + \bar{f}[2])*(y^0 + 0.5*k_{02}) + 0.5*(\bar{g}[1] + \bar{g}[2])]$
+    \State $k_{04} = h*(y^1 + k_{13})$
+    \State $k_{14} = h[\bar{f}[2]*(y^0 + k_{03}) + \bar{g}[2]]$
+    \State $y^0(x_{i+1}) = y^0 + \frac{1}{6}*(k_{01} + 2*k_{02} + 2*k_{03} + k_{04})$
+    \State $y^1(x_{i+1}) = y^1 + \frac{1}{6}*(k_{11} + 2*k_{12} + 2*k_{13} + k_{14})$
+    \State \Return $[y^0(x_{i+1}), y^1(x_{i+1})]$
+\end{algorithmic}
+
+\subsection*{Predictor Corrector Method Adams-Moulton Orders 4 and 5}
+Description of the predictor corrector Adasm-Moulton (PCAM4) function implementation, the PCAM4 the integration routine
+produces $y^0(x_{i}), y^1(x_{i})$
+\begin{algorithmic}
+    \State $h \gets (x_{i} - x_{i-1})$
+    \State $ \bar{y}^0 \gets [y^0(x_{i-4}), y^0(x_{i-3}), y^0(x_{i-2}), y^0(x_{i-1})]$
+    \State $ \bar{y}^1 \gets [y^1(x_{i-4}), y^1(x_{i-3}), y^1(x_{i-2}), y^1(x_{i-1})]$
+    \State $\bar{f} \gets [f(x_{i-3}), f(x_{i-2}), f(x_{i-1}), f(x_{i})]$
+    \State $\bar{g} \gets [g(x_{i-3}), g(x_{i-2}), g(x_{i-1}), g(x_{i})]$
+    \State $y^0_{prediction} = \bar{y}^0[4] + \frac{h}{24}*(55*\bar{y}^1[4] - 59*\bar{y}^1[3] 
+    +37*\bar{y}^1[2] - 9*\bar{y}^1[1])$
+    \State $y^1_{prediction} = \bar{y}^1[4] + \frac{h}{24}*(55*(\bar{y}^0[4]*f[4] + g[4]) - 59*(\bar{y}^0[3]*f[3] + g[3]) 
+    +37*(\bar{y}^0[2]*f[2] + g[2]) - 9*(\bar{y}^0[1]*f[1] + g[1]))$
+
+    \State $y^0_{corrector} = \bar{y}^0[4] + \frac{h}{24}*(9*y^1_{prediction} + 19*\bar{y}^1[3] 
+    - 5*\bar{y}^1[2] + 1*\bar{y}^1[1])$
+    \State $y^1_{corrector} = \bar{y}^1[4] + \frac{h}{24}*(9*(y^0_{prediction}*f[4] + g[4]) + 19*(\bar{y}^0[3]*f[3] + g[3]) 
+    - 5*(\bar{y}^0[2]*f[2] + g[2]) + 1*(\bar{y}^0[1]*f[1] + g[1]))$
+    
+\end{algorithmic}
+
+\subsection{Schrödinger's equation}
+The time independent Schrödinger equation:
+\begin{equation}
+    \label{eqn:general_schdinger}
+    \frac{-1}{2} \nabla^2 \Psi(\vec{r})  + V(r) \Psi(\vec{r}) = E \Psi(\vec{r})
+\end{equation}
+
+Assuming a solution of the form:
+\begin{equation}
+    \label{eqn:psi_deffinition}
+    \Psi(\vec{r}) = \frac{u(r) Y_{m}^{l}}{r}
+\end{equation}
+Where $Y_{m}^{l}$ are the spherical harmonics such that after substituting equation \ref{eqn:psi_deffinition} 
+into equation \ref*{eqn:general_schdinger}, we get a radial Schrödinger equation of the form:
+\begin{equation}
+    \label{eqn:radial_schdinger}
+    \frac{-1}{2} \frac{d^2 u(r)}{dr^2}  + \frac{l(l+1) u(r)}{2r^2} + V(r) u(r) = E u(r)
+\end{equation}
+Now introduce an effective potential that contains external potential, exchange, correlation, hartree, 
+and angular
+\begin{equation}
+    \label{eqn:V_eff}
+    V_{effe}= V_{angu}(l,r) + V_{ext}(*paramters, r) + V_{hart}(\rho, r) + V_{exch}(\rho, r) 
+    + V_{corr}(\rho, r)
+\end{equation}
+
+Rearranging terms equation \ref*{eqn:radial_schdinger} became:
+\begin{equation}
+\label{eqn:final_schdinger}
+    \frac{d^2 u(r)}{dr^2} = 2 (V_{effe} - E)  u(r)
+\end{equation}
+And equation \ref*{eqn:final_schdinger} has the form of equation \ref*{eqn:general_second_order_diff}
+with $f = 2 (V_{effe} - E)$, $g = 0$, and $y = u$
+%--/Paper--
+
+
+\end{document}
