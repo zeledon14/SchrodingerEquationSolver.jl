@@ -28,6 +28,26 @@ function atom(grid::Vector{Float64}, E::Float64=-0.5,
     return init_valu1_fwrd, init_valu2_fwrd, init_valu1_bwrd, init_valu2_bwrd
 end
 
+function u_r_near_0(grid::Vector{Float64}, i::Int64,l::Int64)::Float64
+    return grid[i]^(l+1);
+end
+
+function du_dr_near_0(grid::Vector{Float64}, i::Int64,l::Int64)::Float64
+    return (l+1)*grid[i]^l
+end
+
+function v_i_near_0(grid::Vector{Float64}, i::Int64,
+    l::Int64, b::Float64)::Float64
+    return u_r_near_0(grid, i, l)*exp(-0.5*b*i)
+end
+
+function dv_di_near_0(grid::Vector{Float64}, i::Int64,
+    l::Int64, a::Float64,b::Float64)::Float64
+    temp= du_dr_near_0(grid,i,l)*a*b*exp(0.5*b*i);
+    temp1= 0.5*b*u_r_near_0(grid,i,l)*exp(-0.5*b*i);
+    return temp - temp1
+end
+
 function harmoic_oscillator(grid::Vector{Float64},  E::Float64=-0.5, 
     l::Int64=0)::Tuple{Float64,Float64,Float64,Float64}
     init_valu1_fwrd::Float64=exp(-0.5*abs(grid[1])^2);

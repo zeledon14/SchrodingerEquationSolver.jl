@@ -33,7 +33,37 @@ module IntegralNumericalMethods
         y1=zeros(Float64, N);#first derivative of solution to differential equation
         y0[1]= init_valu1;
         y1[1]= (init_valu2 - init_valu1)/(grid[2]-grid[1]);
+        println("function initial value", y0[1])
+        println("function derivative initial value", y1[1])
+        println("+++++++++++++++++++++++++++++++++++++")
+
+        for i in 1:4
+        #for i in 1:(N-1)
+            h= grid[i+1] - grid[i];
+            y0[i+1], y1[i+1]= RK4(g[i:i+1],f[i:i+1],y0[i], y1[i],h);
+        end
+        #integration loop using prediction correction adams moulton degree 5
+        for i in 6:N
+            h= grid[i] - grid[i-1];
+            y0[i], y1[i]= PCABM5(g[i-5:i],f[i-5:i],y0[i-5:i-1], y1[i-5:i-1],h);
+        end
         
+        return y0
+    end
+
+    function integrate_second_order_DE_RK4_PCABM5_direct_initial(grid::Vector{Float64}, 
+        g::Vector{Float64}, f::Vector{Float64}, 
+        y0_in::Float64, dy0_in::Float64)::Vector{Float64}
+        
+        N=size(grid)[1];
+        y0=zeros(Float64, N);#solution to differential equation
+        y1=zeros(Float64, N);#first derivative of solution to differential equation
+        y0[1]= y0_in;
+        y1[1]= dy0_in;
+        println("function initial value", y0[1])
+        println("function derivative initial value", y1[1])
+        println("+++++++++++++++++++++++++++++++++++++")
+
         for i in 1:4
         #for i in 1:(N-1)
             h= grid[i+1] - grid[i];
