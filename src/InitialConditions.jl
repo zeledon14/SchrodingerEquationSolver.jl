@@ -48,6 +48,38 @@ function dv_di_near_0(grid::Vector{Float64}, i::Int64,
     return temp - temp1
 end
 
+function u_r_end(grid::Vector{Float64}, E::Float64)::Float64
+    if sign(E) < 0.0
+        lambda= (-2.0*E)^0.5;
+    else
+        lambda= (2.0*E)^0.5;
+    end
+
+    return exp(-1.0*lambda*grid[end]);
+end
+
+function du_dr_end(grid::Vector{Float64}, E::Float64)::Float64
+    if sign(E) < 0.0
+        lambda= (-2.0*E)^0.5;
+    else
+        lambda= (2.0*E)^0.5;
+    end
+
+    return -1.0*lambda*exp(-1.0*lambda*grid[end]);
+end
+
+
+function v_i_end(grid::Vector{Float64}, E::Float64, b::Float64, i::Int64)::Float64
+    return u_r_end(grid, E)*exp(-0.5*b*i)
+end
+
+function dv_di_end(grid::Vector{Float64},
+    E::Float64, a::Float64,b::Float64, i::Int64)::Float64
+    temp= du_dr_end(grid,E)*a*b*exp(0.5*b*i);
+    temp1= 0.5*b*u_r_end(grid, E)*exp(-0.5*b*i);
+    return temp - temp1
+end
+
 function harmoic_oscillator(grid::Vector{Float64},  E::Float64=-0.5, 
     l::Int64=0)::Tuple{Float64,Float64,Float64,Float64}
     init_valu1_fwrd::Float64=exp(-0.5*abs(grid[1])^2);
