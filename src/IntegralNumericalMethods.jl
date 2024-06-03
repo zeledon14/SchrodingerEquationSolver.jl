@@ -60,9 +60,9 @@ module IntegralNumericalMethods
         y1=zeros(Float64, N);#first derivative of solution to differential equation
         y0[1]= y0_in;
         y1[1]= dy0_in;
-        println("function initial value", y0[1])
-        println("function derivative initial value", y1[1])
-        println("+++++++++++++++++++++++++++++++++++++")
+        #println("function initial value", y0[1])
+        #println("function derivative initial value", y1[1])
+        #println("+++++++++++++++++++++++++++++++++++++")
 
         for i in 1:4
         #for i in 1:(N-1)

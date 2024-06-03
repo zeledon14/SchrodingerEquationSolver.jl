@@ -80,6 +80,16 @@ function dv_di_end(grid::Vector{Float64},
     return temp - temp1
 end
 
+function atom_v(grid_stru::Any, E::Float64=-0.5, 
+    l::Int64=0)::Tuple{Float64,Float64,Float64,Float64}
+    end_i= size(grid_stru.grid_i)[1];
+    v1= InitialConditions.v_i_near_0(grid_stru.grid, 1, l, grid_stru.b);
+    dv1= InitialConditions.dv_di_near_0(grid_stru.grid,1, l, grid_stru.a, grid_stru.b);
+    v_end= InitialConditions.v_i_end(grid_stru.grid, E, grid_stru.b,end_i);
+    dv_end= InitialConditions.dv_di_end(grid_stru.grid, E, grid_stru.a, grid_stru.b, end_i);         
+return v1, dv1, v_end, dv_end
+end
+
 function harmoic_oscillator(grid::Vector{Float64},  E::Float64=-0.5, 
     l::Int64=0)::Tuple{Float64,Float64,Float64,Float64}
     init_valu1_fwrd::Float64=exp(-0.5*abs(grid[1])^2);
