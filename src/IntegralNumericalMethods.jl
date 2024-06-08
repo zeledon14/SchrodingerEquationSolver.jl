@@ -33,9 +33,6 @@ module IntegralNumericalMethods
         y1=zeros(Float64, N);#first derivative of solution to differential equation
         y0[1]= init_valu1;
         y1[1]= (init_valu2 - init_valu1)/(grid[2]-grid[1]);
-        println("function initial value", y0[1])
-        println("function derivative initial value", y1[1])
-        println("+++++++++++++++++++++++++++++++++++++")
 
         for i in 1:4
         #for i in 1:(N-1)
