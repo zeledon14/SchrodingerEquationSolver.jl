@@ -46,12 +46,42 @@ function solver(Z::Int64, density::Vector{Float64},
         init_valu1_fwrd,init_valu2_fwrd);
     end
     #set boudary condtion over U_hartree
-    a= (Z - U_hartree[end])/grid[end]
-    U_hartree= U_hartree .+ a.*grid
+    ##a= (Z - U_hartree[end])/grid[end]
+    ##U_hartree= U_hartree .+ a.*grid
     #transform into V_hartree
-    V_hartree=U_hartree./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
-    #return U_hartree
-    return V_hartree
+    ##V_hartree=U_hartree./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
+    return U_hartree
+    #return V_hartree
+end
+
+function solver_v_return_V_hartree(Z::Int64, density::Vector{Float64},
+    grid_stru::Any)::Vector{Float64}
+
+    a::Float64=grid_stru.a;
+    b::Float64=grid_stru.b;
+    grid_i::Vector{Float64}=grid_stru.grid_i;
+    grid::Vector{Float64}=grid_stru.grid;
+    g::Vector{Float64}=(-4.0*pi).*density.*grid;
+    gv::Vector{Float64}=((a*b.*exp.(b.*grid_i)).^2).*g;
+    #g::Vector{Float64}=(-1).*density.*grid;
+    fv::Vector{Float64}= (0.25*b^2).*ones(Float64, size(g)[1]);
+    v1::Float64=grid[1]*exp(-0.5*b*grid_i[1])
+    dv1::Float64= a*b*exp(0.5*b*grid_i[1]) - 0.5*b*grid[1]*exp(-0.5*b*grid_i[1])
+
+
+    #do forward integration of poisson to get U_hartree
+    vv_hartree=IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(grid_i,gv,fv,
+    v1,dv1)
+    #vv_hartree= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
+    #init_valu1_fwrd,init_valu2_fwrd);
+    U_hartree= vv_hartree.*exp.((0.5*b).*grid_i);
+    #set boudary condtion over U_hartree
+    ##a= (Z - U_hartree[end])/grid[end]
+    ##U_hartree= U_hartree .+ a.*grid
+    #transform into V_hartree
+    ##V_hartree=U_hartree./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
+    return U_hartree
+    ##return V_hartree
 end
 
 end
