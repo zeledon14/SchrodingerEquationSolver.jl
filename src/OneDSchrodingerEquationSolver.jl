@@ -67,7 +67,7 @@ end
 
 function solver_v_return_u(E::Float64,v1::Float64,
     dv1::Float64, v_end::Float64,
-    dv_end::Float64, 
+    dv_end::Float64, end_i::Int64,
     v_effe::Vector{Float64},
     grid_stru::Any)::Tuple{Vector{Float64},Float64}
 
@@ -76,7 +76,8 @@ function solver_v_return_u(E::Float64,v1::Float64,
     grid_i::Vector{Float64}=grid_stru.grid_i;
     f::Vector{Float64}= 2.0.*(v_effe .- E);
     fv::Vector{Float64}= ((a*b.*exp.(b.*grid_i)).^2).*f .+ 0.25*b^2;
-    gv=zeros(Float64, size(fv)[1]);
+    total_size=size(fv)[1];
+    gv=zeros(Float64, total_size);
 
     #find turn_pnts of of f, basically the clasical turning points of the effective density_potential
     #with restepect to the E proposed eigenvalue
@@ -89,9 +90,11 @@ function solver_v_return_u(E::Float64,v1::Float64,
     #do forward integration of radial shcrodinger equation u
     v_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(grid_i,gv,fv,
     v1,dv1);
+    v_bwd= zeros(Float64, total_size);
     #do backward integreation of the radial shcrodinger equation u 
-    v_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(reverse(grid_i),gv,reverse(fv),
+    v_bwd_short= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(reverse(grid_i[1:end_i]),gv[1:end_i],reverse(fv[1:end_i]),
     v_end, dv_end));
+    v_bwd[1:end_i]= v_bwd_short;
     #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
     v_fwd, v_bwd= MathUtils.rescale!(v_fwd, v_bwd, turn_pnts[1]);
     #merge solutions

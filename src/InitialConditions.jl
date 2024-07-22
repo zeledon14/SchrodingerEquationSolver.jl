@@ -48,46 +48,63 @@ function dv_di_near_0(grid::Vector{Float64}, i::Int64,
     return temp - temp1
 end
 
-function u_r_end(grid::Vector{Float64}, E::Float64)::Float64
+function u_r_end(grid::Vector{Float64}, E::Float64, i::Int64=0)::Float64
     if sign(E) < 0.0
         lambda= (-2.0*E)^0.5;
     else
         lambda= (2.0*E)^0.5;
     end
+    if i == 0
+        return exp(-1.0*lambda*grid[end]);
+    else
+        return exp(-1.0*lambda*grid[i]);
+    end
 
-    return exp(-1.0*lambda*grid[end]);
 end
 
-function du_dr_end(grid::Vector{Float64}, E::Float64)::Float64
+function du_dr_end(grid::Vector{Float64}, E::Float64, i::Int64=0)::Float64
     if sign(E) < 0.0
         lambda= (-2.0*E)^0.5;
     else
         lambda= (2.0*E)^0.5;
     end
-
-    return -1.0*lambda*exp(-1.0*lambda*grid[end]);
+    if i == 0
+        return -1.0*lambda*exp(-1.0*lambda*grid[end]);
+    else
+        return -1.0*lambda*exp(-1.0*lambda*grid[i]);
+    end
 end
 
 
 function v_i_end(grid::Vector{Float64}, E::Float64, b::Float64, i::Int64)::Float64
-    return u_r_end(grid, E)*exp(-0.5*b*i)
+    return u_r_end(grid, E, i)*exp(-0.5*b*i)
 end
 
 function dv_di_end(grid::Vector{Float64},
     E::Float64, a::Float64,b::Float64, i::Int64)::Float64
     temp= du_dr_end(grid,E)*a*b*exp(0.5*b*i);
-    temp1= 0.5*b*u_r_end(grid, E)*exp(-0.5*b*i);
+    temp1= 0.5*b*u_r_end(grid, E, i)*exp(-0.5*b*i);
     return temp - temp1
 end
 
 function atom_v(grid_stru::Any, E::Float64=-0.5, 
-    l::Int64=0)::Tuple{Float64,Float64,Float64,Float64}
-    end_i= size(grid_stru.grid_i)[1];
+    l::Int64=0)::Tuple{Float64,Float64,Float64,Float64, Int64}
     v1= InitialConditions.v_i_near_0(grid_stru.grid, 1, l, grid_stru.b);
     dv1= InitialConditions.dv_di_near_0(grid_stru.grid,1, l, grid_stru.a, grid_stru.b);
+
+    end_i= size(grid_stru.grid_i)[1];
     v_end= InitialConditions.v_i_end(grid_stru.grid, E, grid_stru.b,end_i);
-    dv_end= InitialConditions.dv_di_end(grid_stru.grid, E, grid_stru.a, grid_stru.b, end_i);         
-return v1, dv1, v_end, dv_end
+    dv_end= InitialConditions.dv_di_end(grid_stru.grid, E, grid_stru.a, grid_stru.b, end_i); 
+    tole= eps(Float64)
+    println(end_i);
+    #while log10(abs(v_end)) < -250.0 && log10(abs(dv_end)) < -250.0
+    while abs(v_end) < tole && abs(dv_end) < tole
+        end_i = end_i - 1;
+        println(end_i);
+        v_end= InitialConditions.v_i_end(grid_stru.grid, E, grid_stru.b,end_i);
+        dv_end= InitialConditions.dv_di_end(grid_stru.grid, E, grid_stru.a, grid_stru.b, end_i);
+    end
+    return v1, dv1, v_end, dv_end, end_i
 end
 
 function harmoic_oscillator(grid::Vector{Float64},  E::Float64=-0.5, 
