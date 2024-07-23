@@ -95,12 +95,12 @@ function atom_v(grid_stru::Any, E::Float64=-0.5,
     end_i= size(grid_stru.grid_i)[1];
     v_end= InitialConditions.v_i_end(grid_stru.grid, E, grid_stru.b,end_i);
     dv_end= InitialConditions.dv_di_end(grid_stru.grid, E, grid_stru.a, grid_stru.b, end_i); 
-    tole= eps(Float64)
-    println(end_i);
+    tole= eps(Float64)*10e-200;
+    #println(end_i);
     #while log10(abs(v_end)) < -250.0 && log10(abs(dv_end)) < -250.0
     while abs(v_end) < tole && abs(dv_end) < tole
         end_i = end_i - 1;
-        println(end_i);
+        #println(end_i);
         v_end= InitialConditions.v_i_end(grid_stru.grid, E, grid_stru.b,end_i);
         dv_end= InitialConditions.dv_di_end(grid_stru.grid, E, grid_stru.a, grid_stru.b, end_i);
     end

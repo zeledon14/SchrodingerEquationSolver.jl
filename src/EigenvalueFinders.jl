@@ -58,9 +58,9 @@ function find_eigenvalue_intervals_v(energy_grid::Vector{Float64},v_effe::Vector
     merg_valu_of_E=zeros(Float64, E_N);
     for (i, ei) in enumerate(energy_grid)
 
-        v1, dv1, v_end, dv_end=initial_condition_function(grid_stru, ei, l);
+        v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
 
-        u_merged, merge_value= odses.solver_v_return_u(ei, v1, dv1, v_end, dv_end, v_effe, grid_stru);
+        u_merged, merge_value= odses.solver_v_return_u(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
         merg_valu_of_E[i]=merge_value;
     end
     ener_indx= MathUtils.indices_of_zeros_finder(merg_valu_of_E);
@@ -135,14 +135,14 @@ function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
     Ea=E_interval[1]
     Eb=E_interval[2]
     Ec=0.0
-    v1, dv1, v_end, dv_end=initial_condition_function(grid_stru, Ea, l);
-    _, u0a= odses.solver_v_return_u(Ea, v1, dv1, v_end, dv_end, v_effe, grid_stru);
+    v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Ea, l);
+    _, u0a= odses.solver_v_return_u(Ea, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
     #_, u0a= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
-    v1, dv1, v_end, dv_end=initial_condition_function(grid_stru, Eb, l);
-    _, u0b= odses.solver_v_return_u(Eb, v1, dv1, v_end, dv_end, v_effe, grid_stru);
+    v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Eb, l);
+    _, u0b= odses.solver_v_return_u(Eb, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
     #_, u0b= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
@@ -152,8 +152,8 @@ function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
         if abs(Ec-Ec_befo) < tolerance
             break
         end
-        v1, dv1, v_end, dv_end=initial_condition_function(grid_stru, Ec, l);
-        _, u0c= odses.solver_v_return_u(Ec, v1, dv1, v_end, dv_end, v_effe, grid_stru);
+        v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Ec, l);
+        _, u0c= odses.solver_v_return_u(Ec, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
         #init_valu1_fwrd, init_valu2_fwrd,
         #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
         #_, u0c= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
@@ -172,8 +172,8 @@ function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
         Ec_befo=Ec
         i+=1
     end
-    v1, dv1, v_end, dv_end=initial_condition_function(grid_stru, Ec, l);
-    u, _= odses.solver_v_return_u(Ec, v1, dv1, v_end, dv_end, v_effe, grid_stru);
+    v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Ec, l);
+    u, _= odses.solver_v_return_u(Ec, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
     #u, _= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
