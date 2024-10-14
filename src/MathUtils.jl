@@ -208,4 +208,11 @@ function is_continuous_enough(func::Vector{Float64},
     return out
 end
 
+function energy_integral_exponential_grid(grid_stru::Any, density::Vector{Float64},
+                                          vp::Vector{Float64})::Float64
+
+    return integral((vp.*density.*(grid_stru.grid_sqrt).*(grid_stru.dr_i)), (grid_stru.grid_i));
+    
+end
+
 end

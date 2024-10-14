@@ -65,7 +65,8 @@ function solver(E::Float64,init_valu1_fwrd::Float64,
     return u_merged, merge_value
 end
 
-function solver_v_return_u(E::Float64,v1::Float64,
+#function solver_exponential_grid solver_v_return_u
+function solver_exponential_grid(E::Float64,v1::Float64,
     dv1::Float64, v_end::Float64,
     dv_end::Float64, end_i::Int64,
     v_effe::Vector{Float64},

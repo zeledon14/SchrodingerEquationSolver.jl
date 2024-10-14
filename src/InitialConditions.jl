@@ -87,7 +87,7 @@ function dv_di_end(grid::Vector{Float64},
     return temp - temp1
 end
 
-function atom_v(grid_stru::Any, E::Float64=-0.5, 
+function atom_exponential_grid(grid_stru::Any, E::Float64=-0.5, 
     l::Int64=0)::Tuple{Float64,Float64,Float64,Float64, Int64}
     v1= InitialConditions.v_i_near_0(grid_stru.grid, 1, l, grid_stru.b);
     dv1= InitialConditions.dv_di_near_0(grid_stru.grid,1, l, grid_stru.a, grid_stru.b);

@@ -24,6 +24,7 @@ module IntegralNumericalMethods
             **Output:**
                 -Vector{Float64} the function that solves the differential equation over the grid
 """
+    #function integrate_second_order_DE_RK4_PCABM5_inital_cond_y0
     function integrate_second_order_DE_RK4_PCABM5(grid::Vector{Float64}, 
         g::Vector{Float64}, f::Vector{Float64}, 
         init_valu1::Float64, init_valu2::Float64)::Vector{Float64}
@@ -48,10 +49,13 @@ module IntegralNumericalMethods
         return y0
     end
 
+    #function integrate_second_order_DE_RK4_PCABM5_inital_cond_y0_y1
     function integrate_second_order_DE_RK4_PCABM5_direct_initial(grid::Vector{Float64}, 
         g::Vector{Float64}, f::Vector{Float64}, 
         y0_in::Float64, dy0_in::Float64)::Vector{Float64}
-        
+        #direct initial because values of the 2 initial conditions 
+        #are given directly. In contrast to the integrate_second_order_DE_RK4_PCABM5 
+        #where the initial conditions are only direct for y0 and not for y1
         N=size(grid)[1];
         y0=zeros(Float64, N);#solution to differential equation
         y1=zeros(Float64, N);#first derivative of solution to differential equation

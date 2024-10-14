@@ -77,57 +77,9 @@ function find_eigenvalue_intervals_v(energy_grid::Vector{Float64},v_effe::Vector
 end
 
 function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
-    v_effe::Vector{Float64}, grid::Vector{Float64}, 
-    initial_condition_function::Function;
-    l::Int64=0, 
-    N_max::Int64=1000, tolerance::Float64=10.0e-12,
-    integrador_type::String="RK4_PCABM5")::Tuple{Vector{Float64}, Float64}
-    i=0
-    Ec_befo=10.0e2
-    Ea=E_interval[1]
-    Eb=E_interval[2]
-    Ec=0.0
-    init_valu1_fwrd, init_valu2_fwrd,
-    init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
-    _, u0a= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
-        init_valu2_bwrd, v_effe, grid,integrador_type);
-    init_valu1_fwrd, init_valu2_fwrd,
-    init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
-    _, u0b= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
-        init_valu2_bwrd, v_effe, grid,integrador_type);
-    while i < N_max
-        Ec=(Ea*u0b -Eb*u0a)/(u0b - u0a)
-        if abs(Ec-Ec_befo) < tolerance
-            break
-        end
-        init_valu1_fwrd, init_valu2_fwrd,
-        init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
-        _, u0c= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
-            init_valu2_bwrd, v_effe, grid,integrador_type);
-        if Integer(sign(u0c)) == Integer(sign(u0a))
-            Ea=float(Ec)
-            u0a=float(u0c)
-            u0b=0.5*u0b
-            #println(" 1  ", Ec)
-        else
-            Eb=float(Ec)
-            u0b=float(u0c)
-            u0a=0.5*u0a
-            #println(" 2  ", Ec)
-        end
-        Ec_befo=Ec
-        i+=1
-    end
-    init_valu1_fwrd, init_valu2_fwrd,
-    init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
-    u, _= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
-        init_valu2_bwrd, v_effe, grid,integrador_type);
-    return u, Ec
-end
-
-function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid_stru::Any, 
-    initial_condition_function::Function;
+    initial_condition_function::Function,
+    solver::Function;
     l::Int64=0, 
     N_max::Int64=1000, tolerance::Float64=10.0e-12)::Tuple{Vector{Float64}, Float64}
     i=0
@@ -135,14 +87,14 @@ function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
     Ea=E_interval[1]
     Eb=E_interval[2]
     Ec=0.0
-    v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Ea, l);
-    _, u0a= odses.solver_v_return_u(Ea, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
+    y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ea, l);
+    _, u0a= solver(Ea, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
     #_, u0a= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
-    v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Eb, l);
-    _, u0b= odses.solver_v_return_u(Eb, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
+    y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Eb, l);
+    _, u0b= solver(Eb, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
     #_, u0b= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
@@ -152,8 +104,8 @@ function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
         if abs(Ec-Ec_befo) < tolerance
             break
         end
-        v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Ec, l);
-        _, u0c= odses.solver_v_return_u(Ec, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
+        y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
+        _, u0c= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
         #init_valu1_fwrd, init_valu2_fwrd,
         #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
         #_, u0c= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
@@ -172,13 +124,39 @@ function illinois_eigenvalue_finder_v(E_interval::Tuple{Float64, Float64},
         Ec_befo=Ec
         i+=1
     end
-    v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, Ec, l);
-    u, _= odses.solver_v_return_u(Ec, v1, dv1, v_end, dv_end, end_i, v_effe, grid_stru);
+    y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
+    u, _= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
     #u, _= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
     return u, Ec
+end
+
+
+function guess_energy_interval(eigen_before::Float64, V_effe_max::Float64, 
+    V_effe_min::Float64, left_scale::Float64=0.10,
+    right_scale::Float64=0.01)::Tuple{Float64,Float64}
+    #TO DO   CHECK THAT THE INTERVAL HAS A SOFT EIGENVALUE
+    E_guess_max= eigen_before - left_scale*eigen_before;
+    E_guess_min= eigen_before + right_scale*eigen_before;
+    while E_guess_max > V_effe_max
+        if E_guess_max> 0
+            E_guess_max= E_guess_max - 0.1*E_guess_max;
+        else
+            E_guess_max= E_guess_max + 0.1*E_guess_max;
+        end
+    end
+
+    while E_guess_min < V_effe_min
+        if E_guess_min < 0.0
+            E_guess_min = E_guess_min - 0.1*E_guess_min;
+        else
+            E_guess_min = E_guess_min + 0.1*E_guess_min;
+        end
+    end
+    return (E_guess_min, E_guess_max)
+    
 end
 
 end
