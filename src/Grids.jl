@@ -56,7 +56,7 @@ module Grids
 
     mutable struct exponenetial_grid_structure
         grid::Vector{Float64} #the exponenetial grid
-        grid_i::Vector{Float64} #uniformly distributed grid
+        grid_i::Vector{Float64} #uniform number grid
         grid_sqrt::Vector{Float64} # exponenetial grid squared
         dr_i::Vector{Float64}#the dr in terms of i for integrals
         a::Float64
@@ -73,6 +73,26 @@ module Grids
         dr_i=(a*b).*(exp.(b.*grid_i));
         N=size(grid)[1];
         return exponenetial_grid_structure(grid, grid_i, grid_sqrt,dr_i,a,b,N)
+        
+    end
+
+
+    mutable struct uniform_grid_structure
+        grid::Vector{Float64} #the grid
+        grid_i::Vector{Float64} #uniform number grid
+        grid_sqrt::Vector{Float64} # exponenetial grid squared
+        #dr_i::Vector{Float64}#the dr in terms of i for integrals
+        #a::Float64
+        #b::Float64
+        N::Int64
+    end
+
+    function init_uniform_grid_structure(r_min::Float64, r_max::Float64, N::Int64)::uniform_grid_structure
+        grid= uniform_grid(r_min, r_max, N);
+        grid_i=[Float64(i) for (i,_) in enumerate(grid)];
+        grid_sqrt= grid.^2;
+        #dr_i=(a*b).*(exp.(b.*grid_i));
+        return uniform_grid_structure(grid, grid_i, grid_sqrt,N)
         
     end
 end

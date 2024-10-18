@@ -103,16 +103,17 @@ merging (turning) point, the merging happens at the turning_point.
 - `merge_value::Float64`: difference between derivatives on the turning (merging) point.
 """
 function merge_solutions(forward::Vector{Float64}, backward::Vector{Float64},
-    grid::Vector{Float64}, turning_point::Int64)::Tuple{Vector{Float64},Float64}
+    grid::Vector{Float64}, turning_point::Int64)::Tuple{Vector{Float64},Float64, Float64}
 u_merged=zeros(Float64, size(forward)[1]);
 fwrd_drvt= three_point_derivative(forward, grid, turning_point);
 bwrd_drvt= three_point_derivative(backward, grid, turning_point);
 merge_value= fwrd_drvt -  bwrd_drvt;
+merge_ratio= ifelse(abs(fwrd_drvt)>abs(bwrd_drvt), abs(fwrd_drvt/bwrd_drvt), abs(bwrd_drvt/fwrd_drvt));
 u_merged[1:turning_point-2]= forward[1:turning_point-2];
 u_merged[turning_point-1:turning_point+1]= (0.5).*(forward[turning_point-1:turning_point+1] 
                                   .+ backward[turning_point-1:turning_point+1]);
 u_merged[turning_point+2:end]= backward[turning_point+2:end];
-return u_merged, merge_value
+return u_merged, merge_value, merge_ratio
 end
 
 """

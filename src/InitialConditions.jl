@@ -107,12 +107,17 @@ function atom_exponential_grid(grid_stru::Any, E::Float64=-0.5,
     return v1, dv1, v_end, dv_end, end_i
 end
 
-function harmoic_oscillator(grid::Vector{Float64},  E::Float64=-0.5, 
-    l::Int64=0)::Tuple{Float64,Float64,Float64,Float64}
-    init_valu1_fwrd::Float64=exp(-0.5*abs(grid[1])^2);
-    init_valu2_fwrd::Float64=exp(-0.5*abs(grid[2])^2);
-    init_valu1_bwrd::Float64=exp(-0.5*abs(grid[end])^2);
-    init_valu2_bwrd::Float64=exp(-0.5*abs(grid[end-1])^2);
-    return init_valu1_fwrd, init_valu2_fwrd, init_valu1_bwrd, init_valu2_bwrd
+function harmoic_oscillator_1D(grid_stru::Any, E::Float64=-0.5, 
+    l::Int64=0)::Tuple{Float64,Float64,Float64,Float64, Int64}
+    #assuming u= exp(-1.0*abs(x)) 
+    u1= exp(-1.0*abs(grid_stru.grid[1]));
+    u_end= exp(-1.0*abs(grid_stru.grid[1]));
+
+    du1= exp(-1.0*abs(grid_stru.grid[1]));
+    du1 = ifelse(grid_stru.grid[1] > 0.0, -1.0 * du1, du1);
+    du_end= exp(-1.0*abs(grid_stru.grid[end]));
+    du_end= ifelse(grid_stru.grid[end] > 0.0, -1.0 * du_end, du_end);
+
+    return u1, du1, u_end, du_end, 0
 end
 end
