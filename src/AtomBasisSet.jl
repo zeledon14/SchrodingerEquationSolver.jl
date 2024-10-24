@@ -62,7 +62,7 @@ end
 - `grid::Vector{Float64}`: A list with the space points.
 """
 function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
-    file= open("../data/atomic_numbers.json");
+    file= open(joinpath(dirname(@__FILE__),"../data/atomic_numbers.json"));
     atomic_numbers= JSON3.read(file);
     N::Int64=size(grid)[1];
     #electron_capacity::Int64=0;
