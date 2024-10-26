@@ -147,7 +147,7 @@ end
 
 
 function guess_energy_interval(eigen_before::Float64, V_effe_max::Float64, 
-    V_effe_min::Float64, left_scale::Float64=0.10,
+    V_effe_min::Float64, left_scale::Float64=0.30,
     right_scale::Float64=0.01)::Tuple{Float64,Float64}
     #TO DO   CHECK THAT THE INTERVAL HAS A SOFT EIGENVALUE
     E_guess_max= eigen_before - left_scale*eigen_before;

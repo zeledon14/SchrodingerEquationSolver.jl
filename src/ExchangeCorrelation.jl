@@ -26,10 +26,21 @@ module ExchangeCorrelation
         temp6= (x .- x0) .- (b.*x0.*x)
         temp7= (x .- x0).*(X_x)
 
-        E_c= (0.5*A).*(temp5 .+ temp4 .- temp3.*(temp2 .+ temp1))
-        V_c= E_c .- (A*c/6.0).*(temp6./temp7)
+        E_c= replace_last_nans!((0.5*A).*(temp5 .+ temp4 .- temp3.*(temp2 .+ temp1)))
+        V_c= E_c .- replace_last_nans!((A*c/6.0).*(temp6./temp7))
         
         return V_x, E_x, V_c, E_c
+    end
+
+    function replace_last_nans!(vec::Vector{Float64})::Vector{Float64}
+        last_valid = findlast(!isnan, vec)  # Find the index of the last non-NaN element
+        if last_valid === nothing
+            return vec  # If no valid element is found, return the original vector
+        end
+        for i in (last_valid + 1):length(vec)
+            vec[i] = vec[last_valid]
+        end
+        return vec
     end
     
 end
