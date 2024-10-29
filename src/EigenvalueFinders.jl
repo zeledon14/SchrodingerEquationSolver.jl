@@ -50,7 +50,7 @@ function find_eigenvalue_intervals_old(energy_grid::Vector{Float64},v_effe::Vect
 end
 
 
-function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
+function find_all_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
     initial_condition_function::Function,
     solver::Function;
     l::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
@@ -84,6 +84,49 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
 
     out_intervals=[(i_interval) for (i, i_interval) in enumerate(intervals) if merge_ratio_of_E[i] < 1.25];
     return out_intervals#intervals, merge_ratio_of_E
+
+
+end
+
+function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
+    initial_condition_function::Function,
+    solver::Function;
+    l::Int64=0,
+    numb_inter::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
+
+    if numb_inter == 0
+        return find_all_eigenvalue_intervals(energy_grid,v_effe, grid_stru, initial_condition_function,solver;l);
+    else
+        out_intervals::Vector{Tuple{Float64,Float64}}=[(0.0,0.0) for _ in 1:numb_inter];
+        intervals_count=1;
+
+        E_N= size(energy_grid)[1]
+
+        e_befo=energy_grid[1];
+        v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, e_befo , l);
+
+        u_merged, merge_value_befo, merge_ratio_befo= solver(e_befo, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
+
+        i=2;
+        while i <=E_N && intervals_count < numb_inter
+            ei=energy_grid[i];
+            v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
+
+            u_merged, merge_value_curr, merge_ratio_curr= solver(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
+            if Int(sign(merge_value_befo)) != Int(sign(merge_value_curr))
+                ei= 0.5*(e_befo + ei)
+                v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
+                u_merged, merge_value, merge_ratio= solver(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
+                if merge_ratio < 1.25
+                    out_intervals[intervals_count]=(e_befo,ei);
+                    intervals_count+=1
+                end
+            end
+            e_befo= float(energy_grid[i]);
+            i+=1;
+        end
+        return out_intervals#intervals, merge_ratio_of_E
+    end
 
 
 end
@@ -147,7 +190,7 @@ end
 
 
 function guess_energy_interval(eigen_before::Float64, V_effe_max::Float64, 
-    V_effe_min::Float64, left_scale::Float64=0.10,
+    V_effe_min::Float64, left_scale::Float64=0.30,
     right_scale::Float64=0.01)::Tuple{Float64,Float64}
     #TO DO   CHECK THAT THE INTERVAL HAS A SOFT EIGENVALUE
     E_guess_max= eigen_before - left_scale*eigen_before;

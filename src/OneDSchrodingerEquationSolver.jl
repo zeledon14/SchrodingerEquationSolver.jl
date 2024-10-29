@@ -82,6 +82,10 @@ function solver_exponential_grid(E::Float64,v1::Float64,
         for the proposed energy eigenvalue, this means v_effe - E has no zeroes"));
     end
   
+    #println("v1 ", v1)
+    #println("dv1 ", dv1)
+    #println("v_end ", v_end)
+    #println("dv_end ", dv_end)
     #do forward integration of radial shcrodinger equation u
     v_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(grid_i,gv,fv,
     v1,dv1);
