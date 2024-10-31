@@ -103,23 +103,27 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
         E_N= size(energy_grid)[1]
 
         e_befo=energy_grid[1];
+        #println("e_befo  ", e_befo)
         v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, e_befo , l);
 
         u_merged, merge_value_befo, merge_ratio_befo= solver(e_befo, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
 
         i=2;
-        while i <=E_N && intervals_count < numb_inter
+        while i <=E_N && intervals_count <= numb_inter
             ei=energy_grid[i];
+            #println("valiu ei ", ei)
             v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
 
             u_merged, merge_value_curr, merge_ratio_curr= solver(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
             if Int(sign(merge_value_befo)) != Int(sign(merge_value_curr))
                 ei= 0.5*(e_befo + ei)
+                #println("ratio ei ", ei)
                 v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
                 u_merged, merge_value, merge_ratio= solver(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
                 if merge_ratio < 1.25
                     out_intervals[intervals_count]=(e_befo,ei);
                     intervals_count+=1
+                    #print("intervals_count ", intervals_count)
                 end
             end
             e_befo= float(energy_grid[i]);
