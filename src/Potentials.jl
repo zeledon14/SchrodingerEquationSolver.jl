@@ -46,4 +46,9 @@ module Potentials
         harm_pote= 0.5.*m.*(w^2).*grid.^2
         return harm_pote
     end
+
+    function gaussian_potential(v0::Float64,grid::Vector{Float64})::Vector{Float64}
+        pote= v0.*exp.(-1.0.*grid.^2)
+        return pote
+    end
 end
