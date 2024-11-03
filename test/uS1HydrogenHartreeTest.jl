@@ -7,8 +7,10 @@ import .ses.Potentials as Potentials
 import .ses.MathUtils as MathUtils
 import .ses.Hydrogen as Hydrogen
 import .ses.InitialConditions as InitialConditions
-import .ses.OneDSchrodingerEquationSolver as odses
-import .ses.OneDPoissonEquationSolver as odpes
+import .ses.OneDSchrodingerEquationSolver as OneDSchrodingerEquationSolver
+import .ses.OneDPoissonEquationSolver as OneDPoissonEquationSolver
+
+
 import .ses.EigenvalueFinders as EigenvalueFinders
 import .ses.AtomBasisSet as AtomBasisSet
 import .ses.Density as Density
@@ -35,7 +37,9 @@ import .ses.Density as Density
 
     end
     density= Density.calculate_density(basis);
-    V_hartree= odpes.solver(Z, density, grid);
+    V_hartree= OneDPoissonEquationSolver
+
+.solver(Z, density, grid);
     U_hartree= V_hartree.*grid;
     U_hartree_target=Hydrogen.U_hartree(grid);
     error= MathUtils.error_difference(U_hartree,U_hartree_target)

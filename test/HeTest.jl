@@ -7,8 +7,10 @@ import .ses.Potentials as Potentials
 import .ses.MathUtils as MathUtils
 import .ses.Hydrogen as Hydrogen
 import .ses.InitialConditions as InitialConditions
-import .ses.OneDSchrodingerEquationSolver as odses
-import .ses.OneDPoissonEquationSolver as odpes
+import .ses.OneDSchrodingerEquationSolver as OneDSchrodingerEquationSolver
+import .ses.OneDPoissonEquationSolver as OneDPoissonEquationSolver
+
+
 import .ses.EigenvalueFinders as EigenvalueFinders
 import .ses.AtomBasisSet as AtomBasisSet
 import .ses.Density as Density
@@ -63,7 +65,9 @@ import .ses.ExchangeCorrelation as ExchangeCorrelation
         E_total_before= float(E_total)
         density_out= Density.calculate_density(basis);
         density_in= Density.linear_mixing(density_in, density_out, alpha=0.25);
-        V_hartree= odpes.solver(Z, density_in, grid);
+        V_hartree= OneDPoissonEquationSolver
+
+.solver(Z, density_in, grid);
         V_x, E_xp, V_c, E_cp= ExchangeCorrelation.potentials(density_in);
     
         V_xcp= V_x .+ V_c;

@@ -2,7 +2,7 @@
 module EigenvalueFinders
 using ..IntegralNumericalMethods
 using ..MathUtils
-import ..OneDSchrodingerEquationSolver as odses
+import ..OneDSchrodingerEquationSolver as OneDSchrodingerEquationSolver
 
 
 """
@@ -32,7 +32,7 @@ function find_eigenvalue_intervals_old(energy_grid::Vector{Float64},v_effe::Vect
         init_valu1_fwrd, init_valu2_fwrd,
         init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, ei, l);
 
-        u_merged, merge_value= odses.solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        u_merged, merge_value= OneDSchrodingerEquationSolver.solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid, integrador_type);
         merg_valu_of_E[i]=merge_value;
     end
@@ -150,13 +150,13 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     _, u0a, _= solver(Ea, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
-    #_, u0a= odses.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+    #_, u0a= OneDSchrodingerEquationSolver.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
     y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Eb, l);
     _, u0b, _= solver(Eb, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
-    #_, u0b= odses.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+    #_, u0b= OneDSchrodingerEquationSolver.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
     while i < N_max
         Ec=(Ea*u0b -Eb*u0a)/(u0b - u0a)
@@ -167,7 +167,7 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
         _, u0c,_= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
         #init_valu1_fwrd, init_valu2_fwrd,
         #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
-        #_, u0c= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        #_, u0c= OneDSchrodingerEquationSolver.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         #    init_valu2_bwrd, v_effe, grid,integrador_type);
         if Integer(sign(u0c)) == Integer(sign(u0a))
             Ea=float(Ec)
@@ -187,7 +187,7 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     u, _, merge_ratio= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
-    #u, _= odses.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+    #u, _= OneDSchrodingerEquationSolver.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
     return u, Ec
 end
