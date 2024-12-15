@@ -52,4 +52,33 @@ module Potentials
         pote= v0.*exp.(-1.0.*grid.^2)
         return pote
     end
+
+
+    function Junquera_confinement_potential(v0::Float64, ri::Float64,
+        grid::Vector{Float64})::Vector{Float64}
+        #density_in::Vector{Float64}= zeros(Float64, N);
+        mask= ifelse.(grid .> ri,  1.0,0.0);
+        rc= 2.0*grid[end] - grid[end-1]; 
+        #println(rc)
+        pote= mask.*v0.*exp.(-1.0.*(rc-ri)./(grid .- ri))./(rc .- grid)
+        nan_indices = findall(isnan, pote)
+        for elem in nan_indices
+            pote[elem]=0.0
+        end
+        return pote
+    end
+
+    function Blum_confinement_potential(s::Float64, r_onset::Float64,
+        grid::Vector{Float64})::Vector{Float64}
+        #density_in::Vector{Float64}= zeros(Float64, N);
+        mask= ifelse.(grid .> r_onset,  1.0,0.0);
+        rc= 2.0*grid[end] - grid[end-1]; 
+        #println(rc)
+        pote= mask.*s.*exp.(-1.0.*(rc-r_onset)./(grid .- r_onset))./(rc .- grid).^2.0
+        nan_indices = findall(isnan, pote)
+        for elem in nan_indices
+            pote[elem]=0.0
+        end
+        return pote
+    end
 end
