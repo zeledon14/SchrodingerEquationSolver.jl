@@ -64,10 +64,11 @@ module Grids
         N::Int64
     end
 
-    function init_exponential_grid_structure(r_max::Float64,Z::Int64)::exponenetial_grid_structure
-        b::Float64=0.002304;
+    function init_exponential_grid_structure(r_max::Float64,Z::Int64; 
+        b::Float64=0.002304)::exponenetial_grid_structure
+        #b::Float64=0.002304;
         a::Float64=(4.34e-6)/Float64(Z);
-        grid= exponential_grid(r_max, Z);
+        grid= exponential_grid(r_max, Z, b=b);
         grid_i=[Float64(i) for (i,_) in enumerate(grid)];
         grid_sqrt= grid.^2;
         dr_i=(a*b).*(exp.(b.*grid_i));
