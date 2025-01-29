@@ -2,7 +2,7 @@
 
 julia_version = "1.10.6"
 manifest_format = "2.0"
-project_hash = "7a6da653665ec2106af384a6e5f816c852251d79"
+project_hash = "c2e7d5b0109410c28f9b352a410f17ab09f83457"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -36,6 +36,18 @@ deps = ["Tokenize"]
 git-tree-sha1 = "0157e592151e39fa570645e2b2debcdfb8a0f112"
 uuid = "00ebfdb7-1f24-5e51-bd34-a7502290713f"
 version = "3.4.3"
+
+[[deps.CUDA_Driver_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "14996d716a2eaaeccfc8d7bc854dd87fde720ac1"
+uuid = "4ee394cb-3365-5eb0-8335-949819d2adfc"
+version = "0.10.4+0"
+
+[[deps.CUDA_Runtime_jll]]
+deps = ["Artifacts", "CUDA_Driver_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
+git-tree-sha1 = "17f1536c600133f7c4113bae0a2d98dbf27c7ebc"
+uuid = "76a88914-d11a-5bdc-97e0-2f5a05c973a2"
+version = "0.15.5+0"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -382,6 +394,10 @@ version = "0.16.5"
     SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
     SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
 
+[[deps.LazyArtifacts]]
+deps = ["Artifacts", "Pkg"]
+uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
+
 [[deps.Lebedev]]
 deps = ["OrderedCollections", "Printf"]
 git-tree-sha1 = "0ec4c3c3b975895d00a6aa3aacfd83f035d48726"
@@ -462,6 +478,30 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "edbf5309f9ddf1cab25afc344b1e8150b7c832f9"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
 version = "2.40.2+0"
+
+[[deps.Libxc]]
+deps = ["Libxc_GPU_jll", "Libxc_jll", "Requires"]
+git-tree-sha1 = "a8af8c180bbd455aed17a950f2efa86f8b1d10bf"
+uuid = "66e17ffc-8502-11e9-23b5-c9248d0eb96d"
+version = "0.3.18"
+
+    [deps.Libxc.extensions]
+    LibxcCudaExt = "CUDA"
+
+    [deps.Libxc.weakdeps]
+    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+
+[[deps.Libxc_GPU_jll]]
+deps = ["Artifacts", "CUDA_Runtime_jll", "CompilerSupportLibraries_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg", "TOML"]
+git-tree-sha1 = "ee321f68686361802f2ddb978dae441a024e61ea"
+uuid = "25af9330-9b41-55d4-a324-1a83c0a0a1ac"
+version = "6.1.0+2"
+
+[[deps.Libxc_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "c5516f2b1655a103225e69477e3df009347580df"
+uuid = "a56a6d9d-ad03-58af-ab61-878bf78270d6"
+version = "6.1.0+0"
 
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
