@@ -120,7 +120,8 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
                 #println("ratio ei ", ei)
                 v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
                 u_merged, merge_value, merge_ratio= solver(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
-                if merge_ratio < 1.25
+                #if merge_ratio < 1.25
+                if merge_ratio < 1.1
                     out_intervals[intervals_count]=(e_befo,ei);
                     intervals_count+=1
                     #print("intervals_count ", intervals_count)
