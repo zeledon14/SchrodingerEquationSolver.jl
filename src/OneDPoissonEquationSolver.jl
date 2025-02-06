@@ -102,24 +102,24 @@ function solver_exponential_grid_forward_back(Z::Int64, density::Vector{Float64}
     dw_end::Float64= -0.5*b*Z*exp(-0.5*b*grid_i[end])
 
     #do forward integration of poisson to get U_hartree
-    vv_hartree=IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(grid_i,gw,fw,
+    vv_hartree_frwd=IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(grid_i,gw,fw,
     w1,dw1)
 
     #do backward integration of poisson to get U_hartree
-    vv_hartree_bcwd=IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(reverse(grid_i),reverse(gw),reverse(fw),
+    vv_hartree_brwd=IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(reverse(grid_i),reverse(gw),reverse(fw),
     w_end,dw_end)
     #vv_hartree= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5(grid,g,f,
     #init_valu1_fwrd,init_valu2_fwrd);
-    U_hartree= vv_hartree.*exp.((0.5*b).*grid_i);
-    U_hartree_bcwd= reverse(vv_hartree_bcwd).*exp.((0.5*b).*grid_i);
+    U_hartree_frwd= vv_hartree_frwd.*exp.((0.5*b).*grid_i);
+    U_hartree_brwd= reverse(vv_hartree_brwd).*exp.((0.5*b).*grid_i);
     #set boudary condtion over U_hartree
-    a= (Z - U_hartree[end])/grid[end]
-    U_hartree= U_hartree .+ a.*grid
+    a= (Z - U_hartree_frwd[end])/grid[end]
+    U_hartree_frwd= U_hartree_frwd .+ a.*grid
     #transform into V_hartree
-    V_hartree=U_hartree./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
-    V_hartree_bcwd=U_hartree_bcwd./grid
+    V_hartree_frwd=U_hartree_frwd./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
+    V_hartree_brwd=U_hartree_brwd./grid
     #return U_hartree
-    return V_hartree, V_hartree_bcwd
+    return V_hartree_frwd, V_hartree_brwd
 end
 
 end
