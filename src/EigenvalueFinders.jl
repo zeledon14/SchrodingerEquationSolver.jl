@@ -121,7 +121,7 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
                 v1, dv1, v_end, dv_end, end_i=initial_condition_function(grid_stru, ei, l);
                 u_merged, merge_value, merge_ratio= solver(ei, v1, dv1, v_end, dv_end, end_i,v_effe, grid_stru);
                 #if merge_ratio < 1.25
-                if merge_ratio < 1.1
+                if merge_ratio < 1.25
                     out_intervals[intervals_count]=(e_befo,ei);
                     intervals_count+=1
                     #print("intervals_count ", intervals_count)
@@ -195,8 +195,8 @@ end
 
 
 function guess_energy_interval(eigen_before::Float64, V_effe_max::Float64, 
-    V_effe_min::Float64, left_scale::Float64=0.30,
-    right_scale::Float64=0.01)::Tuple{Float64,Float64}
+    V_effe_min::Float64, left_scale::Float64=0.35,
+    right_scale::Float64=0.15)::Tuple{Float64,Float64}
     #TO DO   CHECK THAT THE INTERVAL HAS A SOFT EIGENVALUE
     E_guess_max= eigen_before - left_scale*eigen_before;
     E_guess_min= eigen_before + right_scale*eigen_before;
