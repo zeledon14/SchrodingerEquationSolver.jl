@@ -47,6 +47,7 @@ end
 - `orbitals::Array{orbital}`: A list with the orbitals in the basis set.
 """
 mutable struct atom_basis_set
+    Name::String
     Energy::Float64
     E_hartree::Float64
     E_xc::Float64
@@ -64,6 +65,8 @@ end
 function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     file= open(joinpath(dirname(@__FILE__),"../data/atomic_numbers.json"));
     atomic_numbers= JSON3.read(file);
+    file1= open(joinpath(dirname(@__FILE__),"../data/atom_number_name.json"));
+    Name= JSON3.read(file1)[Int64(Z)];
     N::Int64=size(grid)[1];
     #electron_capacity::Int64=0;
     numb_orbitals::Int64=0
@@ -98,7 +101,7 @@ function init_atom_basis_set(Z::Int64, grid::Vector{Float64})::atom_basis_set
     E_hartree::Float64=0.0
     E_xc::Float64=0.0
     V_xc::Float64=0.0
-    return atom_basis_set(Energy,E_hartree,
+    return atom_basis_set(Name,Energy,E_hartree,
                             E_xc,V_xc,
                             grid,orbitals)
     
@@ -107,6 +110,7 @@ end
 function save_basis_set(in_basis::atom_basis_set, save_path::String)    
     orbitals= [orbital_to_dict(i_orbi) for i_orbi in in_basis.orbitals];
     out= JSON3.write(Dict{String, Any}("grid"=>in_basis.grid,
+                             "Name"=>in_basis.Name,
                              "Energy"=>in_basis.Energy,
                              "E_hartree"=>in_basis.E_hartree,
                              "E_xc"=>in_basis.E_xc,
