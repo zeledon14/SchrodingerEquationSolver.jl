@@ -17,13 +17,15 @@ using Printf
 
 #module DFTAtom
 
-    function calculate_atomic_basis_set(Z::Int64)::AtomBasisSet.atom_basis_set
+    function calculate_atomic_basis_set(Z::Int64; r_max::Float64=50.0,
+        potential_type::String="Free_atom", s::Float64= 200.0,
+        r_onset::Float64= 4.00)::AtomBasisSet.atom_basis_set
         #Define parameters and produce an exponential grid.
-        r_max::Float64=50;#Max radius of space grid.
+        #r_max::Float64=50;#Max radius of space grid.
         #Z::Int64=8; #Atomic number, also used as the charge of coulomb potential.
 
         df_dft=DataFrame(CSV.File(joinpath(dirname(@__FILE__),"../nist_dft_tables/dft_Z_$Z/$Z.csv")));
-        pdf_output=joinpath(dirname(@__FILE__),"../pdf_outputs/$Z.pdf")
+        pdf_output=joinpath(dirname(@__FILE__),"../pdf_outputs/$(Z)_$(potential_type).pdf")
         # Extract first row as column names
         col_names = Symbol.(collect(df_dft[1, :]));  # Convert strings to Symbols
         # Remove the first row and assign new column names
@@ -71,6 +73,13 @@ using Printf
             E_c::Float64= 0.0;
 
             E_kinetic::Float64= 0.0;
+
+            V_conf::Vector{Float64}= zeros(Float64, N);
+            if potential_type == "Confined_atom"
+                #s= 200.0;#In hartree
+                #r_onset= 4.00;#bohr radii
+                V_conf= Potentials.Blum_confinement_potential(s, r_onset,grid_stru.grid);
+            end
             #Initializing basis set data structure
             basis= AtomBasisSet.init_atom_basis_set(Z, grid_stru.grid);
 
@@ -83,7 +92,7 @@ using Printf
                     #angular potential for l orbital
                     V_angu= Potentials.angular_potential(i_orbi.l, grid_stru.grid);
                     #Assemble effective potential.
-                    V_effe= V_colu .+ V_angu .+ V_hartree .+ V_x .+ V_c;
+                    V_effe= V_colu .+ V_angu .+ V_hartree .+ V_x .+ V_c.+ V_conf;
                     V_effe_max= maximum(V_effe)
                     V_effe_min= minimum(V_effe)
                     #println(V_effe_max);
@@ -275,7 +284,7 @@ using Printf
             end
 
             #println("✅ Successfully created $final_pdf with table and orbital plots!")
-            basis_save_path=joinpath(dirname(@__FILE__),"../save_basis_set/free_atom_z_$(Z)_r_max_$r_max.json")
+            basis_save_path=joinpath(dirname(@__FILE__),"../save_basis_set/$(potential_type)_z_$(Z)_r_max_$r_max.json")
             #joinpath(dirname(@__FILE__),"../save_basis_set/free_atom_z_$(Z)_r_max_$r_max.json")
             AtomBasisSet.save_basis_set(basis,basis_save_path)
         return basis
