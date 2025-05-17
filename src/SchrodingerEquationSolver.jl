@@ -12,7 +12,8 @@ include("AtomBasisSet.jl");
 include("Density.jl");
 include("ExchangeCorrelation.jl");
 include("Hydrogen.jl");
-include("DFTAtom.jl")
+include("DFTAtom.jl");
+include("libxc_DFTAtom.jl");
 
 export Grids, Potentials, MathUtils, Hydrogen, InitialConditions, OneDSchrodingerEquationSolver,
        OneDPoissonEquationSolver, EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation,
