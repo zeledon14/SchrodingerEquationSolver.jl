@@ -77,7 +77,7 @@ using Libxc
             E_kinetic::Float64= 0.0;
 
             V_conf::Vector{Float64}= zeros(Float64, N);
-            if potential_type == "Confined_atom"
+            if potential_type == "Blum_confined_atom"
                 #s= 200.0;#In hartree
                 #r_onset= 4.00;#bohr radii
                 V_conf= Potentials.Blum_confinement_potential(s, r_onset,grid_stru.grid);

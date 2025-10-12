@@ -1,0 +1,15 @@
+
+elements: [2, 6, 8, 10] #list of elements to calculate basis set
+#r_max: [50.0] # list of r_max to use, if list has only one then all basis set 
+              #are calculated with the same r_max
+r_max: [10.0] #recomended for Blum_confined_atom with s=200.0
+                #r_onset = 4.0
+#potential_type: "Free_atom" #it uses no confinement potential
+potential_type: "Blum_confined_atom" #uses a confinement potential 
+s_blum_potential: 200.0 
+r_onset: 4.0 
+
+#for more details on Blum_confined_atom see the paper "Ab initio molecular 
+#simulations with numeric atom-centered orbitals, 
+#https://doi.org/10.1016/j.cpc.2009.06.022"
+
