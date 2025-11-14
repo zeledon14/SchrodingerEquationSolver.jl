@@ -21,7 +21,8 @@ module PulayDensity
     end
 
 
-    function new_density_in(density_out::Vector{Float64, pula_data::PulayData, scl::Int64})::Vector{Float64}
+    function new_density_in(density_in::Vector{Float64}, density_out::Vector{Float64}, 
+        pula_data::PulayData, scl::Int64)::Vector{Float64}
 
         return new_density;
 
