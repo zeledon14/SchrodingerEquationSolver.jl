@@ -1,4 +1,5 @@
 using AutomaticDocstrings
+using SchrodingerEquationsSolver: MathUtils
 
 module PulayDensity
     """ a module to compute Pulay density mixing
@@ -20,6 +21,19 @@ module PulayDensity
         return PulayData(dns_mtrx, rsdl_mtrx, R_mtrx, m, N, alpha);
     end
 
+    function update_dns_rsdl_mtrx!(curr_dnst_in::Vector{Float64}, densitcurr_dnst_out::Vector{Float64}, 
+        pula_data::PulayData)
+        # Update density matrix
+        pula_data.dns_mtrx[2:end] .= pula_data.dns_mtrx[1:end-1]
+        pula_data.dns_mtrx[1] .= curr_dnst_in
+        # Update residual matrix
+        pula_data.rsdl_mtrx[2:end] .= pula_data.rsdl_mtrx[1:end-1]
+        pula_data.dns_mtrx[1] .= curr_dnst_in .- densitcurr_dnst_out
+    end
+
+    function update_R_mtrx!(pula_data::PulayData, scl::Int64)   
+        pula_data
+    end
 
     function new_density_in(density_in::Vector{Float64}, density_out::Vector{Float64}, 
         pula_data::PulayData, scl::Int64)::Vector{Float64}
