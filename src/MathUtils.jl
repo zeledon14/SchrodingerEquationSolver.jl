@@ -15,6 +15,8 @@ module MathUtils
         -indi::Vector{Int64} a vector with the indices of the turning points
             such that func[indi[i]] has a different sign than func[indi[i+1]]
     """
+#export integral
+
 function indices_of_zeros_finder(func::Vector{Float64})::Vector{Int64}
     indi= Int64[]
     sign_befo= Integer(sign(func[1]))
