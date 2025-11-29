@@ -5,7 +5,8 @@ module libxc_DFTAtom
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, InitialConditions,
                                  OneDSchrodingerEquationSolver, OneDPoissonEquationSolver,
-                                 EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation
+                                 EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation,
+                                 PulayDensity
 using Plots
 using CSV
 using DataFrames
@@ -19,7 +20,8 @@ using Libxc
 
     function calculate_atomic_basis_set(Z::Int64; r_max::Float64=50.0,
         potential_type::String="Free_atom", s::Float64= 200.0,
-        r_onset::Float64= 4.00)::AtomBasisSet.atom_basis_set
+        r_onset::Float64= 4.00, alpha::Float64= 0.22,
+        max_linear_mixing_steps::Int64=17)::AtomBasisSet.atom_basis_set
         #Define parameters and produce an exponential grid.
         #r_max::Float64=50;#Max radius of space grid.
         #Z::Int64=8; #Atomic number, also used as the charge of coulomb potential.
@@ -59,6 +61,9 @@ using Libxc
             V_xcp::Vector{Float64}=zeros(Float64, N);
             #Initializing the density.
             density_in::Vector{Float64}= zeros(Float64, N);
+            m::Int64=15; #number of previous densities to store for Pulay mixing
+            #alpha::Float64= 0.20; #mixing parameter for Pulay mixing
+            pulay_data= PulayDensity.init_pulay_data(N, m,alpha, grid_stru.dr_i, grid_stru.grid_i, grid_stru.grid_sqrt);
             #Initializing total energy
             E_total::Float64=1.0;
             #Initializing total energy step before
@@ -86,6 +91,8 @@ using Libxc
             basis= AtomBasisSet.init_atom_basis_set(Z, grid_stru.grid);
 
             #Energy minimization loop 
+            scl_total=1;
+            scl_pulay=1;
             while abs(E_total - E_total_before) > 10.0e-8
                 E_eigen=0.0;
                 #Loop over every orbital to solve independent particle Schrodinger equation.
@@ -126,7 +133,12 @@ using Libxc
                 #Calculate density with new basis set.
                 density_out= Density.calculate_density(basis);
                 #Smooth the density with linear mixing (combination) of the previous and current densities.
-                density_in= Density.linear_mixing(density_in, density_out, alpha=0.110);
+                if scl_total < max_linear_mixing_steps
+                    density_in= Density.linear_mixing(density_in, density_out, alpha=alpha);
+                else
+                    density_in= PulayDensity.get_new_density_in(density_in, density_out, pulay_data, scl_pulay);
+                    scl_pulay+=1;
+                end
 
                 #Solve Poisson equation to find the new Hartree potential.
                 V_hartree= OneDPoissonEquationSolver.solver_exponential_grid(Z, density_in, grid_stru);
@@ -150,7 +162,7 @@ using Libxc
                 E_colu= 4.0*pi*MathUtils.energy_integral_exponential_grid(grid_stru, density_in, V_colu);
                 #Calculate total energy.
                 E_total= E_kinetic + E_hartree + E_x + E_c + E_colu;
-
+                scl_total+=1;
                 #println(E_total)
                 #println("*****************************************")
 
@@ -158,7 +170,7 @@ using Libxc
             #println("Ekin ", E_kinetic)
             #println("Ecoul ", E_hartree)
             #println("Exc ", (E_x + E_c))
-            #println("Etot ", E_total)
+            println("Etot ", E_total)
             pred_energy_dict= Dict("Ekin"=> E_kinetic, "Exc"=>(E_x + E_c),
             "Ecoul"=>E_hartree, "Etot"=>E_total)
             for i_orbi in basis.orbitals
@@ -166,6 +178,10 @@ using Libxc
                 #println(i_orbi.name)
                 #println(i_orbi.E)
             end
+            println("=========================================");
+            println("DFT calculation with Libxc for Z=$Z with $potential_type potential");
+            println("scl_total: ", scl_total);
+            println("scl_pulay: ", scl_pulay);
 
             # Initialize arrays
             names = String[]
@@ -193,7 +209,7 @@ using Libxc
                                     @sprintf("%10.6f", pred),
                                     @sprintf("%8.6f", diff),
                                     @sprintf("%12.6f", perc)
-                                ])
+                                ]);
             end
 
             # ----------------------------
@@ -290,10 +306,10 @@ using Libxc
             end
 
             #println("✅ Successfully created $final_pdf with table and orbital plots!")
-            basis_save_path=joinpath(dirname(@__FILE__),"../save_basis_set/$(potential_type)_z_$(Z)_r_max_$r_max.json")
+            basis_save_path=joinpath(dirname(@__FILE__),"../save_basis_set/$(potential_type)_z_$(Z)_r_max_$r_max.json");
             #joinpath(dirname(@__FILE__),"../save_basis_set/free_atom_z_$(Z)_r_max_$r_max.json")
-            AtomBasisSet.save_basis_set(basis,basis_save_path)
-        return basis
+            AtomBasisSet.save_basis_set(basis,basis_save_path);
+        return basis;
         end#let
     end
 
