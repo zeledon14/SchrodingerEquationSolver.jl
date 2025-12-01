@@ -27,11 +27,11 @@ module PulayDensity
     function update_dns_rsdl_mtrx!(curr_dnst_in::Vector{Float64}, curr_dnst_out::Vector{Float64}, 
         pula_data::PulayData)
         # Update density matrix
-        pula_data.dns_mtrx[2:end,:] = pula_data.dns_mtrx[1:end-1,:]
-        pula_data.dns_mtrx[1,:] = curr_dnst_in
+        pula_data.dns_mtrx[2:end,:] = pula_data.dns_mtrx[1:end-1,:];
+        pula_data.dns_mtrx[1,:] = curr_dnst_in;
         # Update residual matrix
-        pula_data.rsdl_mtrx[2:end, :] = pula_data.rsdl_mtrx[1:end-1, :]
-        pula_data.rsdl_mtrx[1,:] = curr_dnst_out .- curr_dnst_in
+        pula_data.rsdl_mtrx[2:end, :] = pula_data.rsdl_mtrx[1:end-1, :];
+        pula_data.rsdl_mtrx[1,:] = curr_dnst_out .- curr_dnst_in;
     end
 
     function update_R_mtrx!(pula_data::PulayData, scl::Int64)   
@@ -63,18 +63,18 @@ module PulayDensity
         B_1mtrx = ones(Float64, L+1, L+1);
         B_1mtrx[1:L,1:L] = pula_data.R_mtrx[1:L,1:L];
         B_1mtrx[L+1,L+1]= 0.0;
-        println("B matrix:");
-        println(B_1mtrx);
+        #println("B matrix:");
+        #println(B_1mtrx);
         zero_minus_one= zeros(Float64, L+1);
         zero_minus_one[end] = 1.0;
         B_1mtrx_inv= inv(B_1mtrx);
-        println("B_1mtrx_inv:");
-        println(B_1mtrx_inv);
-        println("zero_minus_one")
-        print(zero_minus_one);
+        #println("B_1mtrx_inv:");
+        #println(B_1mtrx_inv);
+        #println("zero_minus_one")
+        #println(zero_minus_one);
         c_vector= B_1mtrx_inv * zero_minus_one;
-        println("c_vector:");
-        println(c_vector);
+        #println("c_vector:");
+        #println(c_vector);
         #build new density
         new_density= zeros(Float64, pula_data.N);
         c_sum=0.0;
@@ -82,8 +82,8 @@ module PulayDensity
             new_density .+= c_vector[i] .* (pula_data.dns_mtrx[i,:] .+ pula_data.alpha .* pula_data.rsdl_mtrx[i,:]);
             c_sum += c_vector[i];
         end
-        println("c_sum:");
-        println(c_sum);
+        #println("c_sum:");
+        #println(c_sum);
         return new_density;
 
     end

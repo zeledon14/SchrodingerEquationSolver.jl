@@ -20,7 +20,7 @@ using Libxc
 
     function calculate_atomic_basis_set(Z::Int64; r_max::Float64=50.0,
         potential_type::String="Free_atom", s::Float64= 200.0,
-        r_onset::Float64= 4.00, alpha::Float64= 0.22,
+        r_onset::Float64= 4.00, alpha::Float64= 0.3,
         max_linear_mixing_steps::Int64=17)::AtomBasisSet.atom_basis_set
         #Define parameters and produce an exponential grid.
         #r_max::Float64=50;#Max radius of space grid.
@@ -93,7 +93,9 @@ using Libxc
             #Energy minimization loop 
             scl_total=1;
             scl_pulay=1;
-            while abs(E_total - E_total_before) > 10.0e-8
+            linear_mixing_loop=true;#the system starts with linear mixing
+            E_diff= abs(E_total - E_total_before);
+            while E_diff > 10.0e-11
                 E_eigen=0.0;
                 #Loop over every orbital to solve independent particle Schrodinger equation.
                 for i_orbi in basis.orbitals
@@ -102,8 +104,8 @@ using Libxc
                     V_angu= Potentials.angular_potential(i_orbi.l, grid_stru.grid);
                     #Assemble effective potential.
                     V_effe= V_colu .+ V_angu .+ V_hartree .+ V_x .+ V_c.+ V_conf;
-                    V_effe_max= maximum(V_effe)
-                    V_effe_min= minimum(V_effe)
+                    V_effe_max= maximum(V_effe);
+                    V_effe_min= minimum(V_effe);
                     #println(V_effe_max);
                     #println(V_effe_min);
                     energy_interval= EigenvalueFinders.guess_energy_interval(i_orbi.E, V_effe_max, V_effe_min);
@@ -133,11 +135,20 @@ using Libxc
                 #Calculate density with new basis set.
                 density_out= Density.calculate_density(basis);
                 #Smooth the density with linear mixing (combination) of the previous and current densities.
-                if scl_total < max_linear_mixing_steps
+                if E_diff > 10.0e-5 && linear_mixing_loop# scl_total < max_linear_mixing_steps
+                    #println("here1")
                     density_in= Density.linear_mixing(density_in, density_out, alpha=alpha);
+                    #println("Linear mixing step: ", scl_total);
+                    #println("E_diff: ", E_diff);
                 else
+                    #println("here2")
+                    linear_mixing_loop=false;#once in Pulay mixing, never go back to linear mixing
                     density_in= PulayDensity.get_new_density_in(density_in, density_out, pulay_data, scl_pulay);
                     scl_pulay+=1;
+                    #println("scl_total: ", scl_total);
+                    #println("Pulay mixing step: ", scl_pulay);
+                    #println("E_diff: ", E_diff);
+                    
                 end
 
                 #Solve Poisson equation to find the new Hartree potential.
@@ -163,6 +174,7 @@ using Libxc
                 #Calculate total energy.
                 E_total= E_kinetic + E_hartree + E_x + E_c + E_colu;
                 scl_total+=1;
+                E_diff= abs(E_total - E_total_before);
                 #println(E_total)
                 #println("*****************************************")
 
@@ -170,11 +182,11 @@ using Libxc
             #println("Ekin ", E_kinetic)
             #println("Ecoul ", E_hartree)
             #println("Exc ", (E_x + E_c))
-            println("Etot ", E_total)
+            #println("Etot ", E_total)
             pred_energy_dict= Dict("Ekin"=> E_kinetic, "Exc"=>(E_x + E_c),
-            "Ecoul"=>E_hartree, "Etot"=>E_total)
+            "Ecoul"=>E_hartree, "Etot"=>E_total);
             for i_orbi in basis.orbitals
-                merge!(pred_energy_dict, Dict(i_orbi.name => i_orbi.E))
+                merge!(pred_energy_dict, Dict(i_orbi.name => i_orbi.E));
                 #println(i_orbi.name)
                 #println(i_orbi.E)
             end
@@ -195,8 +207,8 @@ using Libxc
             end
 
             # Compute absolute differences and percentage error
-            E_diff = abs.(E_pred .- E_targ)
-            Perc_error = E_diff ./ E_targ
+            E_diff = abs.(E_pred .- E_targ);
+            Perc_error = E_diff ./ E_targ;
 
             # Create table rows as vectors of strings
             atom_header = ["$(basis.Name)", "E in Hartree", "", "", ""]
