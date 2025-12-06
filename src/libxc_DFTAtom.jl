@@ -20,7 +20,7 @@ using Libxc
 
     function calculate_atomic_basis_set(Z::Int64; r_max::Float64=50.0,
         potential_type::String="Free_atom", s::Float64= 200.0,
-        r_onset::Float64= 4.00, alpha::Float64= 0.3,
+        r_onset::Float64= 4.00, alpha::Float64= 0.20,
         max_linear_mixing_steps::Int64=17)::AtomBasisSet.atom_basis_set
         #Define parameters and produce an exponential grid.
         #r_max::Float64=50;#Max radius of space grid.
