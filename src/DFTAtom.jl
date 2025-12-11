@@ -174,21 +174,33 @@ using Printf
 
             # Compute absolute differences and percentage error
             E_diff = abs.(E_pred .- E_targ)
-            Perc_error = E_diff ./ E_targ
+            #Perc_error = E_diff ./ E_targ
 
             # Create table rows as vectors of strings
-            atom_header = ["$(basis.Name)", "E in Hartree", "", "", ""]
-            header = ["Name", "E NIST", "E pred", "|ΔE|", "|ΔE|/E NIST"]
-            data_rows = [atom_header,header]
-            for (n, targ, pred, diff, perc) in zip(names, E_targ, E_pred, E_diff, Perc_error)
-                # Format each value nicely:
-                push!(data_rows, [ n,
-                                    @sprintf("%10.6f", targ),
-                                    @sprintf("%10.6f", pred),
-                                    @sprintf("%8.6f", diff),
-                                    @sprintf("%12.6f", perc)
-                                ])
+            atom_header = ["$(basis.Name)", "E in Hartree", "", ""]
+            header = ["Name", "E NIST", "E pred", "|ΔE|"]
+            data_rows = [atom_header, header]
+
+            for (n, targ, pred, diff) in zip(names, E_targ, E_pred, E_diff)
+                push!(data_rows, [
+                    n,
+                    @sprintf("%10.6f", targ),
+                    @sprintf("%10.6f", pred),
+                    @sprintf("%12.8e", diff)   # 8 decimals, scientific notation
+                ])
             end
+#            atom_header = ["$(basis.Name)", "E in Hartree", "", "", ""]
+#            header = ["Name", "E NIST", "E pred", "|ΔE|", "|ΔE|/E NIST"]
+#            data_rows = [atom_header,header]
+#            for (n, targ, pred, diff, perc) in zip(names, E_targ, E_pred, E_diff, Perc_error)
+#                # Format each value nicely:
+#                push!(data_rows, [ n,
+#                                    @sprintf("%10.6f", targ),
+#                                    @sprintf("%10.6f", pred),
+#                                    @sprintf("%12.7e", diff),
+#                                    @sprintf("%12.6f", perc)
+#                                ])
+#            end
 
             # ----------------------------
             # Define table layout parameters
