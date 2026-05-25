@@ -82,6 +82,7 @@ module Grids
         grid::Vector{Float64} #the grid
         grid_i::Vector{Float64} #uniform number grid
         grid_sqrt::Vector{Float64} # exponenetial grid squared
+        grid_derv::Vector{Float64} #derivateive dr/di
         #dr_i::Vector{Float64}#the dr in terms of i for integrals
         #a::Float64
         #b::Float64
@@ -92,8 +93,9 @@ module Grids
         grid= uniform_grid(r_min, r_max, N);
         grid_i=[Float64(i) for (i,_) in enumerate(grid)];
         grid_sqrt= grid.^2;
+        grid_derv=fill(grid[2] - grid[1], N);
         #dr_i=(a*b).*(exp.(b.*grid_i));
-        return uniform_grid_structure(grid, grid_i, grid_sqrt,N)
+        return uniform_grid_structure(grid, grid_i, grid_sqrt,grid_derv,N)
         
     end
 end

@@ -36,6 +36,12 @@ function du_dr_near_0(grid::Vector{Float64}, i::Int64,l::Int64)::Float64
     return (l+1)*grid[i]^l
 end
 
+function atom_like_r_min(r_min::Float64,l::Int64)::Tuple{Float64,Float64}
+    u=r_min^(l+1);
+    w=(l+1)*r_min^l;
+    return u, w;
+end
+
 function v_i_near_0(grid::Vector{Float64}, i::Int64,
     l::Int64, b::Float64)::Float64
     return u_r_near_0(grid, i, l)*exp(-0.5*b*i)
