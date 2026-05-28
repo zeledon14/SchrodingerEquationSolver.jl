@@ -63,7 +63,7 @@ using Libxc
             density_in::Vector{Float64}= zeros(Float64, N);
             m::Int64=15; #number of previous densities to store for Pulay mixing
             #alpha::Float64= 0.20; #mixing parameter for Pulay mixing
-            pulay_data= PulayDensity.init_pulay_data(N, m,alpha, grid_stru.dr_i, grid_stru.grid_i, grid_stru.grid_sqrt);
+            pulay_data= PulayDensity.init_pulay_data(N, m,alpha, grid_stru.dr_di, grid_stru.grid_i, grid_stru.grid_sqrt);
             #Initializing total energy
             E_total::Float64=1.0;
             #Initializing total energy step before

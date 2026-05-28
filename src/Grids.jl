@@ -17,7 +17,7 @@ module Grids
     
     """
     function exponential_grid(r_max::Float64, Z::Int64; 
-                              b::Float64=0.002304)::Vector{Float64}
+                              b::Float64=0.002304)::Tuple{Vector{Float64}, Vector{Float64}}
         a=(4.34e-6)/Float64(Z)
         #b=0.002304
         #b=0.000504
@@ -25,7 +25,8 @@ module Grids
         
         N=((log((r_max/a)+1.0)/b))
         exp_grid= [a*(exp(b*i) -1.0) for i = 1.0:(N+1.0)]
-        return exp_grid 
+        dr_di= a*b*exp.(b.*(1.0:(N+1.0)));
+        return exp_grid, dr_di
     end
 
 
@@ -58,7 +59,7 @@ module Grids
         grid::Vector{Float64} #the exponenetial grid
         grid_i::Vector{Float64} #uniform number grid
         grid_sqrt::Vector{Float64} # exponenetial grid squared
-        dr_i::Vector{Float64}#the dr in terms of i for integrals
+        dr_di::Vector{Float64}#the dr in terms of i for integrals
         a::Float64
         b::Float64
         N::Int64
@@ -68,12 +69,11 @@ module Grids
         b::Float64=0.002304)::exponenetial_grid_structure
         #b::Float64=0.002304;
         a::Float64=(4.34e-6)/Float64(Z);
-        grid= exponential_grid(r_max, Z, b=b);
+        grid, dr_di= exponential_grid(r_max, Z, b=b);
         grid_i=[Float64(i) for (i,_) in enumerate(grid)];
         grid_sqrt= grid.^2;
-        dr_i=(a*b).*(exp.(b.*grid_i));
         N=size(grid)[1];
-        return exponenetial_grid_structure(grid, grid_i, grid_sqrt,dr_i,a,b,N)
+        return exponenetial_grid_structure(grid, grid_i, grid_sqrt,dr_di,a,b,N)
         
     end
 
@@ -82,20 +82,21 @@ module Grids
         grid::Vector{Float64} #the grid
         grid_i::Vector{Float64} #uniform number grid
         grid_sqrt::Vector{Float64} # exponenetial grid squared
-        grid_derv::Vector{Float64} #derivateive dr/di
-        #dr_i::Vector{Float64}#the dr in terms of i for integrals
+        dr_di::Vector{Float64} #derivateive dr/di
+        #dr_di::Vector{Float64}#the dr in terms of i for integrals
         #a::Float64
         #b::Float64
         N::Int64
     end
 
-    function init_uniform_grid_structure(r_min::Float64, r_max::Float64, N::Int64)::uniform_grid_structure
+    function init_uniform_grid_structure(r_min::Float64, 
+        r_max::Float64, N::Int64)::uniform_grid_structure
         grid= uniform_grid(r_min, r_max, N);
         grid_i=[Float64(i) for (i,_) in enumerate(grid)];
         grid_sqrt= grid.^2;
-        grid_derv=fill(grid[2] - grid[1], N);
-        #dr_i=(a*b).*(exp.(b.*grid_i));
-        return uniform_grid_structure(grid, grid_i, grid_sqrt,grid_derv,N)
+        dr_di=fill(grid[2] - grid[1], N);
+        #dr_di=(a*b).*(exp.(b.*grid_i));
+        return uniform_grid_structure(grid, grid_i, grid_sqrt,dr_di,N)
         
     end
 end
