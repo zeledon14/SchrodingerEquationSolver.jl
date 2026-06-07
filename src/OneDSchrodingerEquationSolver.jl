@@ -65,7 +65,9 @@ function solver_grid_i(E::Float64,u1::Float64,
     v_effe::Vector{Float64},
     grid_stru::Any)::Tuple{Vector{Float64},Float64, Float64}
 
+    grid_i::Vector{Float64}=grid_stru.grid_i;
     grid::Vector{Float64}=grid_stru.grid;
+    dr_di::Vector{Float64}=grid_stru.dr_di;
     f::Vector{Float64}= 2.0.*(v_effe .- E);
     g=zeros(Float64, size(f)[1]);
 
@@ -77,16 +79,17 @@ function solver_grid_i(E::Float64,u1::Float64,
         for the proposed energy eigenvalue, this means v_effe - E has no zeroes"));
     end
     #do forward integration of radial shcrodinger equation u
-    u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(grid,g,f,
-    u1,du1);
+    u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_grid_i(grid_i,g,f,
+    dr_di,u1,du1);
     #do backward integreation of the radial shcrodinger equation u 
-    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_direct_initial(reverse(grid),g,reverse(f),
-    u_end,du_end));
+    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_grid_i(reverse(grid_i),
+    g,reverse(f),
+    reverse(dr_di),u_end,du_end));
     #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
     u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
     #merge solutions
     u_merged, merge_value, merge_ratio= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
-    u_merged= MathUtils.normalize!(u_merged, grid);
+    #u_merged= MathUtils.normalize!(u_merged, grid);
     return u_merged, merge_value, merge_ratio
 end
 
