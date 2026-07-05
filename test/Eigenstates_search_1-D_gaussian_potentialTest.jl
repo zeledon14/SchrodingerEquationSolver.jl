@@ -11,7 +11,7 @@ using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, Initial
 r_min::Float64=-12.0; #Where the space grid starts.
 r_max::Float64=12.0; #Where the space grid ends.
 N=40000; #Number of points in the space grind.
-grid_stru= Grids.init_uniform_grid_structure(r_min, r_max, N); #Grid creation, grid is the list with the grid points.
+grid_stru= Grids.UniformGrid(r_min, r_max, N); #Grid creation, grid is the list with the grid points.
 
 v0::Float64=-10.0;
 

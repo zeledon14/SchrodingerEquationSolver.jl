@@ -34,7 +34,7 @@ using Printf
         energy_target = Dict(zip(replace.(df_dft.Energy, " =" => "") , parse.(Float64, df_dft.LDA)));
 
         #grid definition
-        grid_stru= Grids.init_exponential_grid_structure(r_max, Z);
+        grid_stru= Grids.ExponentialGrid(r_max, Z);
         N=grid_stru.N;
 
 

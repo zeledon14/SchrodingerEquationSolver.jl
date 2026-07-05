@@ -12,7 +12,7 @@ using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, Initial
     Z::Int64=6;#Atomic number, also used as the charge of coulomb potential.
 
         #grid definition
-    grid_stru= Grids.init_exponential_grid_structure(r_max, Z);
+    grid_stru= Grids.ExponentialGrid(r_max, Z);
     N=grid_stru.N;
     @test N == 7835;
 

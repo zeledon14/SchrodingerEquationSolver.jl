@@ -12,16 +12,16 @@ module PulayDensity
         m::Int64 #maximum number of stored densities/residuals
         N::Int64 #number of grid points
         alpha::Float64 #mixing parameter
-        dr_di::Vector{Float64}#the dr in terms of i for integrals
+        dx_di::Vector{Float64}#the dr in terms of i for integrals
         grid_i::Vector{Float64} #uniform number grid
         grid_sqrt::Vector{Float64} # exponenetial grid squared
     end
 
-    function init_pulay_data(N::Int64, m::Int64, alpha::Float64, dr_di, grid_i, grid_sqrt)::PulayData
+    function init_pulay_data(N::Int64, m::Int64, alpha::Float64, dx_di, grid_i, grid_sqrt)::PulayData
         dns_mtrx= zeros(Float64, m, N);#[zeros(Float64, N) for i in 1:m];
         rsdl_mtrx= zeros(Float64, m, N);#[zeros(Float64, N) for i in 1:m];
         R_mtrx= zeros(Float64, m, m);
-        return PulayData(dns_mtrx, rsdl_mtrx, R_mtrx, m, N, alpha, dr_di, grid_i, grid_sqrt);
+        return PulayData(dns_mtrx, rsdl_mtrx, R_mtrx, m, N, alpha, dx_di, grid_i, grid_sqrt);
     end
 
     function update_dns_rsdl_mtrx!(curr_dnst_in::Vector{Float64}, curr_dnst_out::Vector{Float64}, 
@@ -37,14 +37,14 @@ module PulayDensity
     function update_R_mtrx!(pula_data::PulayData, scl::Int64)   
         if scl == 1
             temp_prod= pula_data.rsdl_mtrx[1,:].* pula_data.rsdl_mtrx[1,:];
-            pula_data.R_mtrx[1,1]= 4.0*pi*integral(temp_prod .* pula_data.grid_sqrt.*(pula_data.dr_di), pula_data.grid_i); 
+            pula_data.R_mtrx[1,1]= 4.0*pi*integral(temp_prod .* pula_data.grid_sqrt.*(pula_data.dx_di), pula_data.grid_i); 
         else
             L::Int64= min(scl, pula_data.m);
             #build temporal R temp_R
             temp_R::Vector{Float64}= zeros(Float64, L);
             for i in 1:L
                 temp_prod= pula_data.rsdl_mtrx[1,:].* pula_data.rsdl_mtrx[i,:];
-                temp_R[i]= 4.0*pi*integral(temp_prod .* pula_data.grid_sqrt.*(pula_data.dr_di), pula_data.grid_i); 
+                temp_R[i]= 4.0*pi*integral(temp_prod .* pula_data.grid_sqrt.*(pula_data.dx_di), pula_data.grid_i); 
             end
             pula_data.R_mtrx[2:L,2:L] = pula_data.R_mtrx[1:L-1,1:L-1];
             pula_data.R_mtrx[1,1:L] = temp_R[1:L];

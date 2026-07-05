@@ -98,7 +98,7 @@ function solver_exponential_grid(Z::Int64, density::Vector{Float64},
     #g::Vector{Float64}=(-1).*density.*grid;
     fw::Vector{Float64}= (0.25*b^2).*ones(Float64, size(g)[1]);
     #w1::Float64=grid[1]*exp(-0.5*b*grid_i[1])
-    V_hartree_min= 4.0*pi*MathUtils.integral((density.*(grid_stru.grid).*(grid_stru.dr_di)), (grid_stru.grid_i));
+    V_hartree_min= 4.0*pi*MathUtils.integral((density.*(grid_stru.grid).*(grid_stru.dx_di)), (grid_stru.grid_i));
     w1::Float64=grid[1]*exp(-0.5*b*grid_i[1])*V_hartree_min
     dw1::Float64= (a*b*exp(0.5*b*grid_i[1]) - 0.5*b*grid[1]*exp(-0.5*b*grid_i[1]))*V_hartree_min
 

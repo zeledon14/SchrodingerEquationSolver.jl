@@ -36,7 +36,7 @@ using Libxc
         energy_target = Dict(zip(replace.(df_dft.Energy, " =" => "") , parse.(Float64, df_dft.LDA)));
 
         #grid definition
-        grid_stru= Grids.init_exponential_grid_structure(r_max, Z);
+        grid_stru= Grids.ExponentialGrid(r_max, Z);
         N=grid_stru.N;
         x_func = Functional(:lda_x);
         c_func = Functional(:lda_c_vwn);
@@ -63,7 +63,7 @@ using Libxc
             density_in::Vector{Float64}= zeros(Float64, N);
             m::Int64=15; #number of previous densities to store for Pulay mixing
             #alpha::Float64= 0.20; #mixing parameter for Pulay mixing
-            pulay_data= PulayDensity.init_pulay_data(N, m,alpha, grid_stru.dr_di, grid_stru.grid_i, grid_stru.grid_sqrt);
+            pulay_data= PulayDensity.init_pulay_data(N, m,alpha, grid_stru.dx_di, grid_stru.grid_i, grid_stru.grid_sqrt);
             #Initializing total energy
             E_total::Float64=1.0;
             #Initializing total energy step before
