@@ -30,31 +30,6 @@ module Grids
     end
 
 
-    """
-    uniform_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
-
-    Produces a unifor grid that starts at r_min and ends at r_max, and has 
-    N points.
-    **Inputs:**
-        - r_min: initial r of the grid.
-        - r_max: final r of the grid.
-        - N: number of points in the grid.
-    **Output:**
-        - grid: a uniform grid, where the distance between succesive points in constant.
-
-    """
-    function uniform_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
-        delta= (r_max - r_min)/(N-1);
-        grid= [r_min + i*delta for i=0:(N-1)];
-        return grid;
-    end
-
-    function simple_exponential_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
-        c::Float64=r_max/r_min
-        grid= [r_min*c^(i/N) for i=0:(N-1)];
-        return grid;
-    end
-
     mutable struct ExponentialGrid
         grid::Vector{Float64} #the exponenetial grid
         grid_i::Vector{Float64} #uniform number grid
@@ -77,6 +52,33 @@ module Grids
         
     end
 
+    
+    
+    function simple_exponential_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
+        c::Float64=r_max/r_min
+        grid= [r_min*c^(i/N) for i=0:(N-1)];
+        return grid;
+    end
+    
+    
+    """
+    uniform_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
+
+    Produces a unifor grid that starts at r_min and ends at r_max, and has 
+    N points.
+    **Inputs:**
+        - r_min: initial r of the grid.
+        - r_max: final r of the grid.
+        - N: number of points in the grid.
+    **Output:**
+        - grid: a uniform grid, where the distance between succesive points in constant.
+
+    """
+    function uniform_grid(r_min::Float64, r_max::Float64, N::Int64)::Vector{Float64}
+        delta= (r_max - r_min)/(N-1);
+        grid= [r_min + i*delta for i=0:(N-1)];
+        return grid;
+    end
 
     mutable struct UniformGrid
         grid::Vector{Float64} #the grid
