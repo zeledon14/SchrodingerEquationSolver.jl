@@ -36,13 +36,26 @@ function du_dr_near_0(grid::Vector{Float64}, i::Int64,l::Int64)::Float64
     return (l+1)*grid[i]^l
 end
 
-function atom_like_r_min(r_min::Float64,l::Int64)::Tuple{Float64,Float64}
+function atom_like_poly_at_r_min(r_min::Float64,l::Int64)::Tuple{Float64,Float64}
+"""
+    atom_like_poly_at_r_min(r_min::Float64,l::Int64)
+    Returns the initial condition for a hydrogenic atom u propotional 
+    to r^(l+1) at a minimum r value.
+    **Inputs:**
+        - r_min::Float64: minimum r value for the grid.
+        - l::Int64: angular momentum quantum number."""
     u=r_min^(l+1);
     w=(l+1)*r_min^l;
     return u, w;
 end
 
-function exponenetial_deacy_r_ref(r_ref::Float64, E::Float64)::Tuple{Float64,Float64}
+function exponential_decay_at_r_ref(r_ref::Float64, E::Float64)::Tuple{Float64,Float64}
+    """
+    exponential_decay_at_r_ref(r_ref::Float64, E::Float64)
+    Returns the exponential decay at a reference point r_ref for a given energy E.
+    **Inputs:**
+        - r_ref::Float64: reference point for the exponential decay.
+        - E::Float64: energy eigenvalue."""
     if sign(E) < 0.0
         lambda= (-2.0*E)^0.5;
     else
