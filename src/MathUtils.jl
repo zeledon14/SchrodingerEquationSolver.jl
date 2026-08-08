@@ -107,10 +107,14 @@ merging (turning) point, the merging happens at the turning_point.
 function merge_solutions(forward::Vector{Float64}, backward::Vector{Float64},
     grid::Vector{Float64}, turning_point::Int64)::Tuple{Vector{Float64},Float64, Float64}
 u_merged=zeros(Float64, size(forward)[1]);
+#calculate 3 point derivative of forward and backward solutions at the turning point
 fwrd_drvt= three_point_derivative(forward, grid, turning_point);
 bwrd_drvt= three_point_derivative(backward, grid, turning_point);
+#find merge_value = d(u_fwrd)/dr - d(u_bwrd)-dr at the turning point
+#the merge_value= 0 for the true eigenvalue, and is used to find the eigenvalue
 merge_value= fwrd_drvt -  bwrd_drvt;
 merge_ratio= ifelse(abs(fwrd_drvt)>abs(bwrd_drvt), abs(fwrd_drvt/bwrd_drvt), abs(bwrd_drvt/fwrd_drvt));
+
 u_merged[1:turning_point-2]= forward[1:turning_point-2];
 u_merged[turning_point-1:turning_point+1]= (0.5).*(forward[turning_point-1:turning_point+1] 
                                   .+ backward[turning_point-1:turning_point+1]);

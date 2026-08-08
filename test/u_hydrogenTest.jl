@@ -35,10 +35,10 @@ using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialCondi
     f::Vector{Float64}= 2.0.*(v_effe .- E);
     turn_pnts= MathUtils.indices_of_zeros_finder(f);
     g=zeros(Float64, size(f)[1]);
-    u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_grid_i(grid_i,g,f,dx_di,
+    u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(grid_i,g,f,dx_di,
     u1,w1);
 
-    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_grid_i(reverse(grid_i),g,
+    u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(reverse(grid_i),g,
     reverse(f),reverse(dx_di),
     u_end,w_end));
     u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
