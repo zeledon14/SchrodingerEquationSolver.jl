@@ -31,7 +31,7 @@ function indices_of_zeros_finder(func::Vector{Float64})::Vector{Int64}
 end
 
 """
-    rescale!(solution1::Vector{Float64}, 
+    rescale_abs!(solution1::Vector{Float64}, 
                    solution2::Vector{Float64}, 
                    turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
 rescales the absolute biggest function to the smallest function
@@ -45,7 +45,7 @@ suth that solution1(turning_point) = solution2(turning_point).
 **Output:**
 - `solution1, solution2::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
 """
-function  rescale!(solution1::Vector{Float64}, 
+function  rescale_abs!(solution1::Vector{Float64}, 
                    solution2::Vector{Float64}, 
                    turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
     A1=solution1[turning_point];
@@ -61,6 +61,34 @@ function  rescale!(solution1::Vector{Float64},
     if solution1[1] < 0.0
         solution1= (-1.0).*solution1
         solution2= (-1.0).*solution2
+    end
+    return solution1, solution2
+end
+
+"""
+    rescale_to_unity!(solution1::Vector{Float64}, 
+                      solution2::Vector{Float64}, 
+                      turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
+rescales the solutions to have a unity value at the turning point.
+
+**Inputs:**
+- `solution1::Vector{Float64}`: Vector with the values of the function1 to be scaled
+- `solution2::Vector{Float64}`: Vector with the values of the function2 to be scaled
+- `turning_point::Int64`: Point at wich v_effe - E = 0, there may be many of this points
+                          the one use is lower.
+**Output:**
+- `solution1, solution2::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
+"""
+function  rescale_to_unity!(solution1::Vector{Float64}, 
+                   solution2::Vector{Float64}, 
+                   turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
+    A1=solution1[turning_point];
+    A2=solution2[turning_point];
+    solution1= (1.0/A1).*solution1
+    if sign(A1) != sign(A2)
+        solution2= (-1.0/A2).*solution2
+    else
+        solution2= (1.0/A2).*solution2
     end
     return solution1, solution2
 end

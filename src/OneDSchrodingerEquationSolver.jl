@@ -34,7 +34,7 @@ module OneDSchrodingerEquationSolver
         g,reverse(f),
         reverse(dx_di),u_end,du_end));
         #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
-        u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
+        u_fwd, u_bwd= MathUtils.rescale_abs!(u_fwd, u_bwd, turn_pnts[1]);
         #merge solutions
         u_merged, merge_value, merge_ratio= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
         u_merged= MathUtils.normalize!(u_merged, grid);

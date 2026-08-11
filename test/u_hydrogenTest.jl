@@ -41,7 +41,7 @@ using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialCondi
     u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(reverse(grid_i),g,
     reverse(f),reverse(dx_di),
     u_end,w_end));
-    u_fwd, u_bwd= MathUtils.rescale!(u_fwd, u_bwd, turn_pnts[1]);
+    u_fwd, u_bwd= MathUtils.rescale_abs!(u_fwd, u_bwd, turn_pnts[1]);
         #merge solutions
     u_merged, merge_value, merge_ratio= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
     error= ((h_u_s1 .- u_merged).^2.0).^0.5;
