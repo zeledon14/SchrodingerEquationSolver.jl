@@ -33,8 +33,8 @@ module OneDSchrodingerEquationSolver
         u_bwd= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(reverse(grid_i),
         g,reverse(f),
         reverse(dx_di),u_end,du_end));
-        #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]]
-        u_fwd, u_bwd= MathUtils.rescale_abs!(u_fwd, u_bwd, turn_pnts[1]);
+        #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]] = 1
+        u_fwd, u_bwd= MathUtils.rescale_to_unity_at_turning_point!(u_fwd, u_bwd, turn_pnts[1]);
         #merge solutions
         u_merged, merge_value, merge_ratio= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
         u_merged= MathUtils.normalize!(u_merged, grid);

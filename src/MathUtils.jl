@@ -31,66 +31,62 @@ function indices_of_zeros_finder(func::Vector{Float64})::Vector{Int64}
 end
 
 """
-    rescale_abs!(solution1::Vector{Float64}, 
-                   solution2::Vector{Float64}, 
+    rescale_abs!(solu_fwd::Vector{Float64}, 
+                   solu_bwd::Vector{Float64}, 
                    turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
 rescales the absolute biggest function to the smallest function
-suth that solution1(turning_point) = solution2(turning_point). 
+suth that solu_fwd(turning_point) = solu_bwd(turning_point). 
 
 **Inputs:**
-- `solution1::Vector{Float64}`: Vector with the values of the function1 to be scaled
-- `solution2::Vector{Float64}`: Vector with the values of the function2 to be scaled
+- `solu_fwd::Vector{Float64}`: Vector with the values of the function1 to be scaled
+- `solu_bwd::Vector{Float64}`: Vector with the values of the function2 to be scaled
 - `turning_point::Int64`: Point at wich v_effe - E = 0, there may be many of this points
                           the one use is lower.
 **Output:**
-- `solution1, solution2::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
+- `solu_fwd, solu_bwd::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
 """
-function  rescale_abs!(solution1::Vector{Float64}, 
-                   solution2::Vector{Float64}, 
+function  rescale_abs!(solu_fwd::Vector{Float64}, 
+                   solu_bwd::Vector{Float64}, 
                    turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
-    A1=solution1[turning_point];
-    A2=solution2[turning_point];
+    A1=solu_fwd[turning_point];
+    A2=solu_bwd[turning_point];
     if  abs(A1) > abs(A2)
-        solution1= (A2/A1).*solution1
+        solu_fwd= (A2/A1).*solu_fwd
     else
-        solution2= (A1/A2).*solution2
+        solu_bwd= (A1/A2).*solu_bwd
     end
-    #We assume the solution 1 is always positive at solution1[1] this 
+    #We assume the solution 1 is always positive at solu_fwd[1] this 
     #has to do with the odd states, that when changing the polarity made 
     #the search for eigenvalues harder
-    if solution1[1] < 0.0
-        solution1= (-1.0).*solution1
-        solution2= (-1.0).*solution2
+    if solu_fwd[1] < 0.0
+        solu_fwd= (-1.0).*solu_fwd
+        solu_bwd= (-1.0).*solu_bwd
     end
-    return solution1, solution2
+    return solu_fwd, solu_bwd
 end
 
 """
-    rescale_to_unity!(solution1::Vector{Float64}, 
-                      solution2::Vector{Float64}, 
+    rescale_to_unity!(solu_fwd::Vector{Float64}, 
+                      solu_bwd::Vector{Float64}, 
                       turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
 rescales the solutions to have a unity value at the turning point.
 
 **Inputs:**
-- `solution1::Vector{Float64}`: Vector with the values of the function1 to be scaled
-- `solution2::Vector{Float64}`: Vector with the values of the function2 to be scaled
+- `solu_fwd::Vector{Float64}`: Vector with the values of the function1 to be scaled
+- `solu_bwd::Vector{Float64}`: Vector with the values of the function2 to be scaled
 - `turning_point::Int64`: Point at wich v_effe - E = 0, there may be many of this points
                           the one use is lower.
 **Output:**
-- `solution1, solution2::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
+- `solu_fwd, solu_bwd::Tuple{Vector{Float64},Vector{Float64}}`: Rescaled solutions.
 """
-function  rescale_to_unity!(solution1::Vector{Float64}, 
-                   solution2::Vector{Float64}, 
+function  rescale_to_unity_at_turning_point!(solu_fwd::Vector{Float64}, 
+                   solu_bwd::Vector{Float64}, 
                    turning_point::Int64)::Tuple{Vector{Float64},Vector{Float64}}
-    A1=solution1[turning_point];
-    A2=solution2[turning_point];
-    solution1= (1.0/A1).*solution1
-    if sign(A1) != sign(A2)
-        solution2= (-1.0/A2).*solution2
-    else
-        solution2= (1.0/A2).*solution2
-    end
-    return solution1, solution2
+    A1=solu_fwd[turning_point];
+    A2=solu_bwd[turning_point];
+    solu_fwd= (1.0/A1).*solu_fwd
+    solu_bwd= (1.0/A2).*solu_bwd
+    return solu_fwd, solu_bwd
 end
 
 """
@@ -189,20 +185,6 @@ function normalize!(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64
     return out
 end
 
-function normalize_v!(v::Vector{Float64},grid_struc::Any)::Vector{Float64}
-
-    a::Float64=grid_struc.a;
-    b::Float64=grid_struc.b;
-    grid_i::Vector{Float64}=grid_struc.grid_i;
-
-    func_sqrt::Vector{Float64}= (a*b.*exp.((2.0*b).*grid_i)).*(v.^2.0);
-
-    I= integral(func_sqrt, grid_struc.grid_i);
-    I=I^(0.5)
-    out= v./I
-    return out
-end
-
 """
     error_difference(pred::Vector{Float64}, targ::Vector{Float64})
 
@@ -220,12 +202,7 @@ function error_difference(pred::Vector{Float64},targ::Vector{Float64})::Float64
 end
 
 
-function derivative(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
-    numerator= func[2:end] .- func[1:end-1];
-    denomiator= grid[2:end] .- grid[1:end-1];
-    out= numerator ./ denomiator
-    return out
-end
+
 
 function is_continuous_enough(func::Vector{Float64}, 
                               indx::Int64, N_max::Int64)::Bool
