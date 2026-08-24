@@ -2,7 +2,7 @@
 module EigenvalueFinders
 using ..IntegralNumericalMethods
 using ..MathUtils
-import ..OneDSchrodingerEquationSolver as OneDSchrodingerEquationSolver
+import ..OneDSchrodingerEquationSolver.solver_uniform_integer_grid as solver
 
 
 """
@@ -32,7 +32,7 @@ function find_eigenvalue_intervals_old(energy_grid::Vector{Float64},v_effe::Vect
         init_valu1_fwrd, init_valu2_fwrd,
         init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, ei, l);
 
-        u_merged, merge_value= OneDSchrodingerEquationSolver.solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
+        u_merged, merge_value= solver(ei,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
         init_valu2_bwrd, v_effe, grid, integrador_type);
         merg_valu_of_E[i]=merge_value;
     end
@@ -52,7 +52,6 @@ end
 
 function find_all_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
     initial_condition_function::Function,
-    solver::Function;
     l::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
 
     E_N= size(energy_grid)[1]
@@ -90,7 +89,6 @@ end
 
 function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
     initial_condition_function::Function,
-    solver::Function;
     l::Int64=0,
     numb_inter::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
 
@@ -136,10 +134,12 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
 
 end
 
+
+
 function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid_stru::Any, 
-    initial_condition_function::Function,
-    solver::Function;
+    initial_condition_function_x_min::Function,
+    initial_condition_function_x_max::Function,
     l::Int64=0, 
     N_max::Int64=1000, tolerance::Float64=10.0e-12)::Tuple{Vector{Float64}, Float64}
     i=0

@@ -35,8 +35,11 @@ end
 function du_dr_near_0(grid::Vector{Float64}, i::Int64,l::Int64)::Float64
     return (l+1)*grid[i]^l
 end
-
-function atom_like_poly_at_r_min(r_min::Float64,l::Int64)::Tuple{Float64,Float64}
+#arturo here we have not figure out how to pass the r_min
+#and r_max such that we can pass the initial condition functions
+#to the eigenvalue finder functions
+function atom_like_poly_at_r_min(r_min::Float64, r_max::Float64,
+    l::Int64=0, E::Float64=-0.0)::Tuple{Float64,Float64}
 """
     atom_like_poly_at_r_min(r_min::Float64,l::Int64)
     Returns the initial condition for a hydrogenic atom u propotional 
