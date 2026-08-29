@@ -179,20 +179,30 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     initial_condition_function_x_min::Function,
     initial_condition_function_x_max::Function,
     l::Int64=0, 
-    N_max::Int64=1000, tolerance::Float64=10.0e-12)::Tuple{Vector{Float64}, Float64}
+    N_max::Int64=1000, tolerance::Float64=10.0e-14)::Tuple{Vector{Float64}, Float64}
     i=0
+    r_min=grid_stru.grid[1];
+    r_max=grid_stru.grid[end];
     Ec_befo=10.0e2
     Ea=E_interval[1]
     Eb=E_interval[2]
     Ec=0.0
-    y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ea, l);
-    _, u0a, _= solver(Ea, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
+    u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Ea);
+    u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Ea);
+    _, u0a, _=solver(Ea, u1, w1, u_end, w_end, 
+        v_effe, grid_stru);
+    #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ea, l);
+    #_, u0a, _= solver(Ea, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
     #_, u0a= OneDSchrodingerEquationSolver.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
-    y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Eb, l);
-    _, u0b, _= solver(Eb, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
+    u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Eb);
+    u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Eb);
+    _, u0b, _=solver(Eb, u1, w1, u_end, w_end, 
+        v_effe, grid_stru);
+    #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Eb, l);
+    #_, u0b, _= solver(Eb, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Eb, l);
     #_, u0b= OneDSchrodingerEquationSolver.solver(Eb,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
@@ -202,8 +212,12 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
         if abs(Ec-Ec_befo) < tolerance
             break
         end
-        y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
-        _, u0c,_= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
+        u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Ec);
+        u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Ec);
+        _, u0c, _=solver(Ec, u1, w1, u_end, w_end, 
+            v_effe, grid_stru);        
+        #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
+        #_, u0c,_= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
         #init_valu1_fwrd, init_valu2_fwrd,
         #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
         #_, u0c= OneDSchrodingerEquationSolver.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
@@ -222,8 +236,12 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
         Ec_befo=Ec
         i+=1
     end
-    y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
-    u, _, merge_ratio= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
+    u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Ec);
+    u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Ec);
+    u, _, merge_ratio=solver(Ec, u1, w1, u_end, w_end, 
+        v_effe, grid_stru);    
+    #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
+    #u, _, merge_ratio= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
     #init_valu1_fwrd, init_valu2_fwrd,
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ec, l);
     #u, _= OneDSchrodingerEquationSolver.solver(Ec,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
