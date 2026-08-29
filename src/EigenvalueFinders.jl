@@ -87,7 +87,7 @@ function find_all_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vect
 
 end
 
-function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
+function find_eigenvalue_intervals_to_retire(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
     initial_condition_function::Function,
     l::Int64=0,
     numb_inter::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
@@ -134,7 +134,45 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
 
 end
 
+function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
+    initial_condition_function_x_min::Function,
+    initial_condition_function_x_max::Function,
+    l::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
 
+    r_min=grid_stru.grid[1];
+    r_max=grid_stru.grid[end];
+    merge_value_list= zeros(length(energy_grid));
+    for (i, E) in enumerate(energy_grid)
+        u1, w1 = initial_condition_function_x_min(r_min,l=l, E=E);
+        u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=E);
+        u_merged, merge_value, merge_ratio=solver(E, u1, w1, u_end, w_end, 
+            v_effe, grid_stru);
+        merge_value_list[i] = merge_value;
+    end
+    ener_indx= MathUtils.indices_of_zeros_finder(merge_value_list);
+    #the energy indx should not be 1 
+#clean the potential eigenvalue segments
+    ener_indx_indicator= zeros(length(ener_indx));
+    for (i,indx) in enumerate(ener_indx)
+        delta_E= energy_grid[indx] - energy_grid[indx-1];
+        delta_x= merge_value_list[indx] - merge_value_list[indx-1];
+        log_slop= log10(abs(delta_x)/abs(delta_E));
+        if floor(log_slop) < 1.1
+            ener_indx_indicator[i]=1;
+            #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
+        end
+    end    
+    out_intervals::Vector{Tuple{Float64,Float64}}=[(0.0,0.0) for _ in 1:sum(ener_indx_indicator)];
+    count=1;
+    for (i,indx) in enumerate(ener_indx)
+        if ener_indx_indicator[i]==1
+            out_intervals[count]=(energy_grid[indx-1], energy_grid[indx]);
+            count+=1;
+            #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
+        end
+    end    
+    return out_intervals#intervals, merge_ratio_of_E
+end
 
 function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     v_effe::Vector{Float64}, grid_stru::Any, 

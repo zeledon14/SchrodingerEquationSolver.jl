@@ -38,8 +38,8 @@ end
 #arturo here we have not figure out how to pass the r_min
 #and r_max such that we can pass the initial condition functions
 #to the eigenvalue finder functions
-function atom_like_poly_at_r_min(r_min::Float64, r_max::Float64,
-    l::Int64=0, E::Float64=-0.0)::Tuple{Float64,Float64}
+function atom_like_poly_at_r_min(r_min::Float64;
+    l::Int64=0, E::Float64=0.0)::Tuple{Float64,Float64}
 """
     atom_like_poly_at_r_min(r_min::Float64,l::Int64)
     Returns the initial condition for a hydrogenic atom u propotional 
@@ -52,20 +52,17 @@ function atom_like_poly_at_r_min(r_min::Float64, r_max::Float64,
     return u, w;
 end
 
-function exponential_decay_at_r_ref(r_ref::Float64, E::Float64)::Tuple{Float64,Float64}
+function exponential_decay_at_r_ref(r_ref::Float64; l::Int64=0,E::Float64=0.0)::Tuple{Float64,Float64}
     """
     exponential_decay_at_r_ref(r_ref::Float64, E::Float64)
     Returns the exponential decay at a reference point r_ref for a given energy E.
     **Inputs:**
         - r_ref::Float64: reference point for the exponential decay.
         - E::Float64: energy eigenvalue."""
-    if sign(E) < 0.0
-        lambda= (-2.0*E)^0.5;
-    else
-        lambda= (2.0*E)^0.5;
-    end
-    u= exp(-1.0*lambda*r_ref);
-    w=-1.0*lambda*exp(-1.0*lambda*r_ref);
+    lambda= (2.0*abs(E))^0.5;
+    r_abs= abs(r_ref);
+    u= exp(-1.0*lambda*r_abs);
+    w=-1.0*lambda*exp(-1.0*lambda*r_abs);
     return u, w;
 end
 
