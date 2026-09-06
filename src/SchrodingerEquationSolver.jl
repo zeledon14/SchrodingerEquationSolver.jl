@@ -8,7 +8,7 @@ include("OneDSchrodingerEquationSolver.jl");
 include("OneDPoissonEquationSolver.jl");
 include("InitialConditions.jl");
 include("EigenvalueFinders.jl");
-include("AtomBasisSet.jl");
+include("AtomicBasisSets.jl");
 include("Density.jl");
 include("ExchangeCorrelation.jl");
 include("Hydrogen.jl");
@@ -20,7 +20,7 @@ using .MathUtils
 using .PulayDensity
 
 export Grids, Potentials, MathUtils, Hydrogen, InitialConditions, OneDSchrodingerEquationSolver,
-       OneDPoissonEquationSolver, EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation,
+       OneDPoissonEquationSolver, EigenvalueFinders, AtomicBasisSets, Density, ExchangeCorrelation,
        IntegralNumericalMethods, DFTAtom, PulayDensity
 
 end

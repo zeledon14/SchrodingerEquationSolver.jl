@@ -50,7 +50,7 @@ using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, Initial
     #Initializing correlation enrgy
     E_c::Float64= 0.0;
     #Initializing basis set data structure
-    basis= AtomBasisSet.init_atom_basis_set(Z, grid_stru.grid);
+    basis= AtomicBasisSets.init_AtomBasisSet(Z, grid_stru.grid);
 
     #Energy minimization loop 
     while abs(E_total - E_total_before) > 10.0e-8
