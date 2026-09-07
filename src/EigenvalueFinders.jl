@@ -28,7 +28,7 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
         delta_E= energy_grid[indx] - energy_grid[indx-1];
         delta_x= merge_value_list[indx] - merge_value_list[indx-1];
         log_slop= log10(abs(delta_x)/abs(delta_E));
-        if log_slop < 1.1
+        if log_slop < 1.5
             ener_indx_indicator[i]=1;
             #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
         end

@@ -61,8 +61,10 @@ function exponential_decay_at_r_ref(r_ref::Float64; l::Int64=0,E::Float64=0.0)::
         - E::Float64: energy eigenvalue."""
     lambda= (2.0*abs(E))^0.5;
     r_abs= abs(r_ref);
-    u= exp(-1.0*lambda*r_abs);
-    w=-1.0*lambda*exp(-1.0*lambda*r_abs);
+    #keep a cap of a 700 to avoid initial conditions to be 0
+    t=min((lambda*r_abs),700)
+    u= exp(-1.0*t);
+    w=-1.0*lambda*exp(-1.0*t);
     return u, w;
 end
 
