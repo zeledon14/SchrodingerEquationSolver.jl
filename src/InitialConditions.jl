@@ -52,7 +52,7 @@ function atom_like_poly_at_r_min(r_min::Float64;
     return u, w;
 end
 
-function exponential_decay_at_r_ref(r_ref::Float64; l::Int64=0,E::Float64=0.0)::Tuple{Float64,Float64}
+function exponential_decay_at_r_ref(grid::Vector{Float64},i_ref::Int64; l::Int64=0,E::Float64=0.0)::Tuple{Float64,Float64}
     """
     exponential_decay_at_r_ref(r_ref::Float64, E::Float64)
     Returns the exponential decay at a reference point r_ref for a given energy E.
@@ -60,12 +60,19 @@ function exponential_decay_at_r_ref(r_ref::Float64; l::Int64=0,E::Float64=0.0)::
         - r_ref::Float64: reference point for the exponential decay.
         - E::Float64: energy eigenvalue."""
     lambda= (2.0*abs(E))^0.5;
-    r_abs= abs(r_ref);
-    #keep a cap of a 700 to avoid initial conditions to be 0
-    t=min((lambda*r_abs),700)
-    u= exp(-1.0*t);
-    w=-1.0*lambda*exp(-1.0*t);
-    return u, w;
+    r_abs= abs(grid[i_ref]);
+    u= exp(-1.0*lambda*r_abs);
+    w=-1.0*lambda*exp(-1.0*lambda*r_abs);
+    i_out=i_ref
+    if u<10.0e-200
+        r_prop=199.0*log(10.0)/lambda;
+        if grid[i_ref] > 0.0
+            i_out= argmin(abs(grid .- r_prop))
+        else
+            i_out= argmin(abs(grid .+ r_prop))
+        end
+    end
+    return u, w, i_out;
 end
 
 function v_i_near_0(grid::Vector{Float64}, i::Int64,
