@@ -4,7 +4,7 @@ using Test
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, InitialConditions,
                                  OneDSchrodingerEquationSolver, OneDPoissonEquationSolver,
-                                 EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation
+                                 EigenvalueFinders, AtomicBasisSets, Density, ExchangeCorrelation
 @testset "Eigenstates_search_1-D_quantum_harmonic_oscillator_linear_gridTest" begin
 
     # Space grid definition and creation

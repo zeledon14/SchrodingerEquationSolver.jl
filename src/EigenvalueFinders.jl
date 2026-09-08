@@ -28,7 +28,7 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
         delta_E= energy_grid[indx] - energy_grid[indx-1];
         delta_x= merge_value_list[indx] - merge_value_list[indx-1];
         log_slop= log10(abs(delta_x)/abs(delta_E));
-        if log_slop < 1.01
+        if log_slop < 1.1
             ener_indx_indicator[i]=1;
             #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
         end
@@ -50,7 +50,7 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     initial_condition_function_x_min::Function,
     initial_condition_function_x_max::Function,
     l::Int64=0, 
-    N_max::Int64=1000, tolerance::Float64=10.0e-15)::Tuple{Vector{Float64}, Float64}
+    N_max::Int64=1000, tolerance::Float64=10.0e-20)::Tuple{Vector{Float64}, Float64}
     i=0
     grid= grid_stru.grid;
     N=grid_stru.N;

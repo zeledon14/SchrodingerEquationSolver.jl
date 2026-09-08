@@ -66,8 +66,8 @@ function exponential_decay_at_r_ref(grid::Vector{Float64},i_ref::Int64;
     u= exp(-1.0*lambda*r_abs);
     w=-1.0*lambda*exp(-1.0*lambda*r_abs);
     i_out=i_ref
-    if u<10.0e-199
-        r_prop=198.0*log(10.0)/lambda;
+    if u<10.0e-200
+        r_prop=199.0*log(10.0)/lambda;
         if grid[i_ref] > 0.0
             i_out= argmin(abs.(grid .- r_prop))
         else
