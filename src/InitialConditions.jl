@@ -38,8 +38,8 @@ end
 #arturo here we have not figure out how to pass the r_min
 #and r_max such that we can pass the initial condition functions
 #to the eigenvalue finder functions
-function atom_like_poly_at_r_min(r_min::Float64;
-    l::Int64=0, E::Float64=0.0)::Tuple{Float64,Float64}
+function atom_like_poly_at_r_min(grid::Vector{Float64},i_ref::Int64;
+    l::Int64=0, E::Float64=0.0)::Tuple{Float64,Float64,Int64}
 """
     atom_like_poly_at_r_min(r_min::Float64,l::Int64)
     Returns the initial condition for a hydrogenic atom u propotional 
@@ -47,12 +47,14 @@ function atom_like_poly_at_r_min(r_min::Float64;
     **Inputs:**
         - r_min::Float64: minimum r value for the grid.
         - l::Int64: angular momentum quantum number."""
+    r_min=grid[i_ref];
     u=r_min^(l+1);
     w=(l+1)*r_min^l;
-    return u, w;
+    return u, w, i_ref;
 end
 
-function exponential_decay_at_r_ref(grid::Vector{Float64},i_ref::Int64; l::Int64=0,E::Float64=0.0)::Tuple{Float64,Float64}
+function exponential_decay_at_r_ref(grid::Vector{Float64},i_ref::Int64;
+    l::Int64=0,E::Float64=0.0)::Tuple{Float64,Float64, Int64}
     """
     exponential_decay_at_r_ref(r_ref::Float64, E::Float64)
     Returns the exponential decay at a reference point r_ref for a given energy E.
@@ -64,13 +66,16 @@ function exponential_decay_at_r_ref(grid::Vector{Float64},i_ref::Int64; l::Int64
     u= exp(-1.0*lambda*r_abs);
     w=-1.0*lambda*exp(-1.0*lambda*r_abs);
     i_out=i_ref
-    if u<10.0e-200
-        r_prop=199.0*log(10.0)/lambda;
+    if u<10.0e-199
+        r_prop=198.0*log(10.0)/lambda;
         if grid[i_ref] > 0.0
-            i_out= argmin(abs(grid .- r_prop))
+            i_out= argmin(abs.(grid .- r_prop))
         else
-            i_out= argmin(abs(grid .+ r_prop))
+            i_out= argmin(abs.(grid .+ r_prop))
         end
+        r_abs= abs(grid[i_out]);
+        u= exp(-1.0*lambda*r_abs);
+        w=-1.0*lambda*exp(-1.0*lambda*r_abs);
     end
     return u, w, i_out;
 end

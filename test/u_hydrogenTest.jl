@@ -73,7 +73,7 @@ end
     g=zeros(Float64, size(f)[1]);
     r_min=grid_stru.grid[1];
     u1, w1 = InitialConditions.atom_like_poly_at_r_min(r_min,l=l,E=E);
-    u_end, w_end=InitialConditions.exponential_decay_at_r_ref(r_max, l=l, E=E);
+    u_end, w_end=InitialConditions.exponential_decay_at_r_ref(grid, lenght(grid), l=l, E=E);
     u_merged, merge_value, merge_ratio=OneDSchrodingerEquationSolver.solver_uniform_integer_grid(E,u1,w1, 
     u_end,w_end,v_effe,grid_stru)
     err= ((h_u_s1_norm .- u_merged).^2.0).^0.5;

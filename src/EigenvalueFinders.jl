@@ -10,14 +10,14 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
     initial_condition_function_x_max::Function,
     l::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
 
-    r_min=grid_stru.grid[1];
-    r_max=grid_stru.grid[end];
+    grid= grid_stru.grid;
     merge_value_list= zeros(length(energy_grid));
     for (i, E) in enumerate(energy_grid)
-        u1, w1 = initial_condition_function_x_min(r_min,l=l, E=E);
-        u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=E);
-        u_merged, merge_value, merge_ratio=solver(E, u1, w1, u_end, w_end, 
-            v_effe, grid_stru);
+        u1, w1, i_1 = initial_condition_function_x_min(grid, 1,l=l, E=E);
+        u_end, w_end, i_end =initial_condition_function_x_max(grid, grid_stru.N, l=l,E=E);
+        u_merged, merge_value, merge_ratio=solver(E, u1, w1, i_1, 
+                                                  u_end, w_end, i_end,
+                                                    v_effe, grid_stru);
         merge_value_list[i] = merge_value;
     end
     ener_indx= MathUtils.indices_of_zeros_finder(merge_value_list);
@@ -28,7 +28,7 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
         delta_E= energy_grid[indx] - energy_grid[indx-1];
         delta_x= merge_value_list[indx] - merge_value_list[indx-1];
         log_slop= log10(abs(delta_x)/abs(delta_E));
-        if log_slop < 1.5
+        if log_slop < 1.01
             ener_indx_indicator[i]=1;
             #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
         end
@@ -50,17 +50,17 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     initial_condition_function_x_min::Function,
     initial_condition_function_x_max::Function,
     l::Int64=0, 
-    N_max::Int64=1000, tolerance::Float64=10.0e-14)::Tuple{Vector{Float64}, Float64}
+    N_max::Int64=1000, tolerance::Float64=10.0e-15)::Tuple{Vector{Float64}, Float64}
     i=0
-    r_min=grid_stru.grid[1];
-    r_max=grid_stru.grid[end];
+    grid= grid_stru.grid;
+    N=grid_stru.N;
     Ec_befo=10.0e2
     Ea=E_interval[1]
     Eb=E_interval[2]
     Ec=0.0
-    u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Ea);
-    u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Ea);
-    _, u0a, _=solver(Ea, u1, w1, u_end, w_end, 
+    u1, w1, i_1 = initial_condition_function_x_min(grid, 1,l=l, E=Ea);
+    u_end, w_end, i_end =initial_condition_function_x_max(grid, N, l=l,E=Ea);
+    _, u0a, _=solver(Ea, u1, w1, i_1, u_end, w_end, i_end, 
         v_effe, grid_stru);
     #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ea, l);
     #_, u0a, _= solver(Ea, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
@@ -68,9 +68,9 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
     #init_valu1_bwrd, init_valu2_bwrd =initial_condition_function(grid, Ea, l);
     #_, u0a= OneDSchrodingerEquationSolver.solver(Ea,init_valu1_fwrd,init_valu2_fwrd, init_valu1_bwrd,
     #    init_valu2_bwrd, v_effe, grid,integrador_type);
-    u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Eb);
-    u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Eb);
-    _, u0b, _=solver(Eb, u1, w1, u_end, w_end, 
+    u1, w1, i_1 = initial_condition_function_x_min(grid, 1,l=l, E=Eb);
+    u_end, w_end, i_end =initial_condition_function_x_max(grid, N, l=l,E=Eb);
+    _, u0b, _=solver(Eb, u1, w1, i_1, u_end, w_end, i_end, 
         v_effe, grid_stru);
     #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Eb, l);
     #_, u0b, _= solver(Eb, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
@@ -83,9 +83,9 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
         if abs(Ec-Ec_befo) < tolerance
             break
         end
-        u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Ec);
-        u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Ec);
-        _, u0c, _=solver(Ec, u1, w1, u_end, w_end, 
+        u1, w1, i_1 = initial_condition_function_x_min(grid, 1,l=l, E=Ec);
+        u_end, w_end, i_end =initial_condition_function_x_max(grid, N, l=l,E=Ec);
+        _, u0c, _=solver(Ec, u1, w1, i_1, u_end, w_end, i_end, 
             v_effe, grid_stru);        
         #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
         #_, u0c,_= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
@@ -107,9 +107,9 @@ function illinois_eigenvalue_finder(E_interval::Tuple{Float64, Float64},
         Ec_befo=Ec
         i+=1
     end
-    u1, w1 = initial_condition_function_x_min(r_min,l=l, E=Ec);
-    u_end, w_end=initial_condition_function_x_max(r_max, l=l,E=Ec);
-    u, _, merge_ratio=solver(Ec, u1, w1, u_end, w_end, 
+    u1, w1, i_1 = initial_condition_function_x_min(grid, 1,l=l, E=Ec);
+    u_end, w_end, i_end =initial_condition_function_x_max(grid, N, l=l,E=Ec);
+    u, _, merge_ratio=solver(Ec, u1, w1, i_1, u_end, w_end, i_end, 
         v_effe, grid_stru);    
     #y0_0, y1_0, y0_end, y1_end, end_i=initial_condition_function(grid_stru, Ec, l);
     #u, _, merge_ratio= solver(Ec, y0_0, y1_0, y0_end, y1_end, end_i, v_effe, grid_stru);
