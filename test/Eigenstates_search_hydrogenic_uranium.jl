@@ -27,7 +27,8 @@ using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialCondi
         v_effe =(
             Potentials.angular_potential(l, grid) .+
             Potentials.coulomb_potential(Z, grid));
-        
+        #Energy inteval around the theoretical one for the 
+        #Illinois eigenvalue finder
         E_pred_inte= (1.03*E_target, 0.973*E_target);
 
         u,E_pred= EigenvalueFinders.illinois_eigenvalue_finder(E_pred_inte,
