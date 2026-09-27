@@ -2,10 +2,9 @@ using AutomaticDocstrings
 using Test
 
 using SchrodingerEquationSolver
-using SchrodingerEquationSolver
-using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialConditions,
-                                   IntegralNumericalMethods, OneDSchrodingerEquationSolver
-@testset "H_TEST" begin
+using SchrodingerEquationSolver:Potentials, MathUtils, Hydrogen,
+        InitialConditions,IntegralNumericalMethods, OneDSchrodingerEquationSolver, OneDPoissonEquationSolver
+@testset "H_u_and_u_hartree_TEST" begin
     n=1;
     Z=1;
     l=0;
@@ -19,6 +18,7 @@ using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialCondi
     dx_di::Vector{Float64}=grid_stru.dx_di;
     grid_sqrt::Vector{Float64}=grid_stru.grid_sqrt;
     h_u_s1= Hydrogen.u_s1_hydrogen(grid_stru.grid);
+    u_hartree_s1= Hydrogen.U_hartree(grid_stru.grid);
 
     r_min=grid_stru.grid[1];
     u1= h_u_s1[1];
@@ -51,9 +51,22 @@ using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialCondi
     @test max_error < 4e-7
     @test average_error < 2.5e-8
 
+    #hartree section
+    density= (u_merged.^2.0)./(grid.^2.0);
+    V_hartree= OneDPoissonEquationSolver.solver_uniform_integer_grid(Z,density, grid_stru);
+    
+    U_hartree = V_hartree.*grid;
+    error= ((u_hartree_s1 .- U_hartree).^2.0).^0.5;
+    max_error= maximum(error);
+    average_error= sum(error)/length(error);
+
+    @test max_error < 10.0e-12;
+    @test average_error < 10.0e-12;
+
+
 end
 
-@testset "H_test_initial_conditions_solver_uniform_integer_grid" begin
+@testset "H_u_and_u_hartree_TEST_initial_conditions_solver_uniform_integer_grid" begin
 
 
     Z=1;

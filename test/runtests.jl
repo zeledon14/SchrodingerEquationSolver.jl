@@ -9,9 +9,8 @@ using Test
     include("u_hydrogenTest.jl")
 end
 
-#to run test
-
-#= in SchrodingerEquationSolver directory
+#=to run test
+in SchrodingerEquationSolver directory
 
 julia
 

@@ -167,6 +167,18 @@ function integral(func::Vector{Float64},grid::Vector{Float64})::Float64
     return I
 end
 
+function integral_uniform_integer_grid(func::Vector{Float64},grid_stru::Any)::Float64
+    dx_di::Vector{Float64}=grid_stru.dx_di;
+    
+    #temp=grid[2:end] .- grid[1:end-1];
+    #temp1=func[2:end] .+ func[1:end-1];
+    #I= temp.*temp1
+    #I= 0.5*I
+    I= 0.5*sum((dx_di[2:end] .- dx_di[1:end-1]).*(func[2:end] .+ func[1:end-1]))
+    #I= 0.5*sum(I)
+    return I
+end
+
 """
     normalize!(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
 

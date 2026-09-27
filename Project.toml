@@ -1,13 +1,14 @@
 name = "SchrodingerEquationSolver"
 uuid = "4262c980-0eff-4bee-97c7-49b90bf0d56e"
-authors = ["Arturo Hernandez"]
 version = "1.0.0-DEV"
+authors = ["Arturo Hernandez"]
 
 [deps]
 AutomaticDocstrings = "70b36510-7dee-11e9-28d4-77afe9445f67"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 GraphDataFrameBridge = "3c71623a-a715-5176-9801-629b201a4880"
 IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
@@ -24,6 +25,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
+GLMakie = "0.13.15"
 julia = "1.10.6"
 
 [extras]

@@ -27,6 +27,30 @@ raw"""
 - `grid::Vector{Float64}`: Vector with the grid values.
 """
 
+function solver_uniform_integer_grid(Z::Int64,density::Vector{Float64},
+    grid_stru::Any)::Vector{Float64}
+
+    grid_i::Vector{Float64}=grid_stru.grid_i;
+    grid::Vector{Float64}=grid_stru.grid;
+    dx_di::Vector{Float64}=grid_stru.dx_di;
+    g::Vector{Float64}=(-4.0*pi).*density.*grid;
+    f=zeros(Float64, grid_stru.N);
+    V_hartree_min= 4.0*pi*MathUtils.integral((density.*(grid_stru.grid).*(grid_stru.dx_di)), (grid_stru.grid_i));
+    u1= grid[1]*V_hartree_min;
+    du1=V_hartree_min;
+    U_hartree= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(grid_i,
+        g,f,
+        dx_di,u1,du1); 
+    #a= (Z - U_hartree[end])/grid[end]
+    #U_hartree= U_hartree .+ a.*grid
+    # Physical boundary condition: far outside the density, U(r) -> Z (total enclosed charge)
+    U_hartree = U_hartree .* (Z / U_hartree[end])
+    #transform into V_hartree
+    V_hartree=U_hartree./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
+    #return U_hartree
+    return V_hartree
+end
+
 function solver(Z::Int64, density::Vector{Float64},
     grid::Vector{Float64}, integrador_type::String="RK4_PCABM5")::Vector{Float64}
 
@@ -53,6 +77,8 @@ function solver(Z::Int64, density::Vector{Float64},
     #return U_hartree
     return V_hartree
 end
+
+
 
 #function solver_v_return_V_hartree
 #= function solver_exponential_grid(Z::Int64, density::Vector{Float64},
