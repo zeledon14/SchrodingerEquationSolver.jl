@@ -4,7 +4,7 @@ using Test
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialConditions,
                                    IntegralNumericalMethods, OneDSchrodingerEquationSolver,
-                                   EigenvalueFinders, AtomicBasisSets
+                                   EigenvalueFinders, BasisSets
 @testset "Eigenstates_search_hydrogenic_uranium" begin
 
     Z=92;
@@ -14,7 +14,7 @@ using SchrodingerEquationSolver:   Potentials, MathUtils, Hydrogen, InitialCondi
     r_min=grid_stru.grid[1];
     r_max=grid_stru.grid[end];
     grid_i=grid_stru.grid_i;
-    uran_basis= AtomicBasisSets.AtomBasisSet(Z, grid);
+    uran_basis= BasisSets.AtomBasisSet(Z, grid);
     l_max= maximum([elem.l for elem in uran_basis.orbitals])
     lns=Dict{Int64,Dict}(l=>Dict{String,Int64}("n_max"=>1, "n_min"=>l+1) for l in (0:l_max))
 

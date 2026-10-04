@@ -3,12 +3,14 @@ module EigenvalueFinders
 using ..IntegralNumericalMethods
 using ..MathUtils
 import ..OneDSchrodingerEquationSolver.solver_uniform_integer_grid as solver
-
+using Plots
 
 function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{Float64}, grid_stru::Any, 
     initial_condition_function_x_min::Function,
-    initial_condition_function_x_max::Function,
-    l::Int64=0)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
+    initial_condition_function_x_max::Function;
+    l::Int64=0, type="general", debug=false)::Vector{Tuple{Float64,Float64}}#Tuple{Vector{Tuple{Float64,Float64}}, Vector{Float64}}#Tuple{Vector{Tuple{Float64,Float64}},Vector{Tuple{Float64,Float64}}}
+    #type "general" look for all eigen values for general cases like searching 
+    #type "single" 
 
     grid= grid_stru.grid;
     merge_value_list= zeros(length(energy_grid));
@@ -20,28 +22,37 @@ function find_eigenvalue_intervals(energy_grid::Vector{Float64},v_effe::Vector{F
                                                     v_effe, grid_stru);
         merge_value_list[i] = merge_value;
     end
+    if debug==true
+        Plots.display(plot(energy_grid, merge_value_list, title= "merge_value_list vs energy_grid"))
+    end
     ener_indx= MathUtils.indices_of_zeros_finder(merge_value_list);
     #the energy indx should not be 1 
-#clean the potential eigenvalue segments
-    ener_indx_indicator= zeros(length(ener_indx));
-    for (i,indx) in enumerate(ener_indx)
-        delta_E= energy_grid[indx] - energy_grid[indx-1];
-        delta_x= merge_value_list[indx] - merge_value_list[indx-1];
-        log_slop= log10(abs(delta_x)/abs(delta_E));
-        if log_slop < 1.1
-            ener_indx_indicator[i]=1;
-            #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
-        end
-    end    
-    out_intervals::Vector{Tuple{Float64,Float64}}=[(0.0,0.0) for _ in 1:sum(ener_indx_indicator)];
-    count=1;
-    for (i,indx) in enumerate(ener_indx)
-        if ener_indx_indicator[i]==1
-            out_intervals[count]=(energy_grid[indx-1], energy_grid[indx]);
-            count+=1;
-            #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
-        end
-    end    
+    #clean the potential eigenvalue segments for general cases
+    if type == "single"
+        out_intervals=[(energy_grid[ener_indx[1]-1], energy_grid[ener_indx[1]])];
+    else
+        ener_indx_indicator= zeros(length(ener_indx));
+        for (i,indx) in enumerate(ener_indx)
+            delta_E= energy_grid[indx] - energy_grid[indx-1];
+            delta_x= merge_value_list[indx] - merge_value_list[indx-1];
+            log_slop= log10(abs(delta_x)/abs(delta_E));
+            if debug==true
+                println("log_slop ", log_slop)
+            end
+            if log_slop < 1.1
+                ener_indx_indicator[i]=1;
+            end
+        end    
+        out_intervals::Vector{Tuple{Float64,Float64}}=[(0.0,0.0) for _ in 1:sum(ener_indx_indicator)];
+        count=1;
+        for (i,indx) in enumerate(ener_indx)
+            if ener_indx_indicator[i]==1
+                out_intervals[count]=(energy_grid[indx-1], energy_grid[indx]);
+                count+=1;
+                #println("E= ", E_grid_stru.grid[indx],  " E_1= ", E_grid_stru.grid[indx-1], " merge_value= ", merge_value_list[indx]);
+            end
+        end  
+    end  
     return out_intervals#intervals, merge_ratio_of_E
 end
 
@@ -122,16 +133,22 @@ end
 
 
 function guess_energy_interval(eigen_before::Float64, V_effe_max::Float64, 
-    V_effe_min::Float64, left_scale::Float64=0.35,
-    right_scale::Float64=0.15)::Tuple{Float64,Float64}
+    V_effe_min::Float64, left_scale::Float64=0.02,
+    right_scale::Float64=0.35)::Tuple{Float64,Float64}
     #TO DO   CHECK THAT THE INTERVAL HAS A SOFT EIGENVALUE
-    E_guess_max= eigen_before - left_scale*eigen_before;
-    E_guess_min= eigen_before + right_scale*eigen_before;
+    if eigen_before > 0.0
+        E_guess_min= eigen_before - left_scale*eigen_before;
+        E_guess_max= eigen_before + right_scale*eigen_before;
+    else
+        E_guess_min= eigen_before + left_scale*eigen_before;
+        E_guess_max= eigen_before - right_scale*eigen_before;
+    end
+
     while E_guess_max > V_effe_max
         if E_guess_max> 0
-            E_guess_max= E_guess_max - 0.1*E_guess_max;
+            E_guess_max= E_guess_max - 0.05*E_guess_max;
         else
-            E_guess_max= E_guess_max + 0.1*E_guess_max;
+            E_guess_max= E_guess_max + 0.05*E_guess_max;
         end
     end
 

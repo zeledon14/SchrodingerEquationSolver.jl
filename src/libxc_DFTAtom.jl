@@ -5,7 +5,7 @@ module libxc_DFTAtom
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, InitialConditions,
                                  OneDSchrodingerEquationSolver, OneDPoissonEquationSolver,
-                                 EigenvalueFinders, AtomicBasisSets, Density, ExchangeCorrelation,
+                                 EigenvalueFinders, BasisSets, Density, ExchangeCorrelation,
                                  PulayDensity
 using Plots
 using CSV
@@ -21,7 +21,7 @@ using Libxc
     function calculate_atomic_basis_set(Z::Int64; r_max::Float64=50.0,
         potential_type::String="Free_atom", s::Float64= 200.0,
         r_onset::Float64= 4.00, alpha::Float64= 0.20,
-        max_linear_mixing_steps::Int64=17)::AtomicBasisSets.AtomBasisSet
+        max_linear_mixing_steps::Int64=17)::BasisSets.AtomBasisSet
         #Define parameters and produce an exponential grid.
         #r_max::Float64=50;#Max radius of space grid.
         #Z::Int64=8; #Atomic number, also used as the charge of coulomb potential.
@@ -88,7 +88,9 @@ using Libxc
                 V_conf= Potentials.Blum_confinement_potential(s, r_onset,grid_stru.grid);
             end
             #Initializing basis set data structure
-            basis= AtomicBasisSets.init_AtomBasisSet(Z, grid_stru.grid);
+            basis= BasisSets.AtomBasisSet(Z, grid_stru.grid);
+            initial_condition_function_x_min = InitialConditions.atom_like_poly_at_r_min;
+            initial_condition_function_x_max = InitialConditions.exponential_decay_at_r_ref;
 
             #Energy minimization loop 
             scl_total=1;
@@ -112,15 +114,15 @@ using Libxc
                     #println(E_intervals);
                     E_grid= Grids.uniform_grid(energy_interval[1], energy_interval[2], 300); #List with the energy grid points.
 
-                    E_intervals= EigenvalueFinders.find_eigenvalue_intervals(E_grid, V_effe, grid_stru,
-                                InitialConditions.atom_exponential_grid,
-                                    OneDSchrodingerEquationSolver.solver_exponential_grid, numb_inter=1);
+                    E_intervals= EigenvalueFinders.find_eigenvalue_intervals(E_grid.grid, V_effe, grid_stru,
+                                initial_condition_function_x_min,
+                                initial_condition_function_x_max;
+                                l=i_orbi.l);
                     #println(E_intervals);
                     #print("here ")
                     u_temp, ei_temp= EigenvalueFinders.illinois_eigenvalue_finder(E_intervals[1], V_effe, 
-                    grid_stru,InitialConditions.atom_exponential_grid, 
-                    OneDSchrodingerEquationSolver.solver_exponential_grid ,
-                    l=i_orbi.l);
+                    grid_stru,initial_condition_function_x_min,
+                    initial_condition_function_x_max,i_orbi.l);
                     #Update eigenvalue and eigenfunction in the basis set data structure.
                     i_orbi.E=ei_temp;
                     i_orbi.u=u_temp;
@@ -152,7 +154,7 @@ using Libxc
                 end
 
                 #Solve Poisson equation to find the new Hartree potential.
-                V_hartree= OneDPoissonEquationSolver.solver_exponential_grid(Z, density_in, grid_stru);
+                V_hartree= OneDPoissonEquationSolver.solver_uniform_integer_grid(Z, density_in, grid_stru);
                 #Calculate new exchange and correlation potentials.
                 V_xtemp, E_xp = evaluate(x_func, rho=density_in);
                 V_x= vec(V_xtemp);
@@ -332,7 +334,7 @@ using Libxc
             #println("✅ Successfully created $final_pdf with table and orbital plots!")
             basis_save_path=joinpath(dirname(@__FILE__),"../save_basis_set/$(potential_type)_z_$(Z)_r_max_$r_max.json");
             #joinpath(dirname(@__FILE__),"../save_basis_set/free_atom_z_$(Z)_r_max_$r_max.json")
-            AtomicBasisSets.save_basis_set(basis,basis_save_path);
+            BasisSets.save_basis_set(basis,basis_save_path);
         return basis;
         end#let
     end

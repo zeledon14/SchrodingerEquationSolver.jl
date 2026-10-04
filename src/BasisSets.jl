@@ -1,6 +1,6 @@
 using AutomaticDocstrings
 
-module AtomicBasisSets
+module BasisSets
     using JSON3
 
 """
@@ -35,7 +35,7 @@ module AtomicBasisSets
         return out
     end
 """
-   AtomBasisSet
+   BasisSets
 
 
    Structure to hold a list of orbitals and grid making a basis set.
@@ -56,7 +56,7 @@ module AtomicBasisSets
     end
 
 """
-   init_AtomBasisSet(Z::Int64, grid::Vector{Float64})
+   init_BasisSets(Z::Int64, grid::Vector{Float64})
 **Inputs:**
 - `Z::Int64`: Atomic number of the element.
 - `grid::Vector{Float64}`: A list with the space points.
@@ -120,6 +120,6 @@ module AtomicBasisSets
         end 
     end
     function load_basis_set_from_json(path::String)
-        return JSON3.read(path, AtomBasisSet);
+        return JSON3.read(path, BasisSets);
     end
 end

@@ -197,6 +197,14 @@ function normalize!(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64
     return out
 end
 
+function normalize_!(func::Vector{Float64},grid::Vector{Float64})::Vector{Float64}
+    func_sqrt::Vector{Float64}= func.^2.0
+    I= integral(func_sqrt, grid)
+    I=I^(0.5)
+    out= func./I
+    return out
+end
+
 """
     error_difference(pred::Vector{Float64}, targ::Vector{Float64})
 

@@ -52,7 +52,9 @@ using SchrodingerEquationSolver:Potentials, MathUtils, Hydrogen,
     @test average_error < 2.5e-8
 
     #hartree section
-    density= (u_merged.^2.0)./(grid.^2.0);
+    norm = MathUtils.integral(u_merged.^2 .* dx_di, grid_i)
+    u_merged ./= sqrt(norm)
+    density= (1.0/(4.0*pi)).*(u_merged.^2.0)./(grid.^2.0);   
     V_hartree= OneDPoissonEquationSolver.solver_uniform_integer_grid(Z,density, grid_stru);
     
     U_hartree = V_hartree.*grid;

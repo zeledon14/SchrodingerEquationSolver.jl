@@ -5,7 +5,7 @@ module DFTAtom
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, InitialConditions,
                                  OneDSchrodingerEquationSolver, OneDPoissonEquationSolver,
-                                 EigenvalueFinders, AtomicBasisSets, Density, ExchangeCorrelation
+                                 EigenvalueFinders, BasisSets, Density, ExchangeCorrelation
 using Plots
 using CSV
 using DataFrames
@@ -19,7 +19,7 @@ using Printf
 
     function calculate_atomic_basis_set(Z::Int64; r_max::Float64=50.0,
         potential_type::String="Free_atom", s::Float64= 200.0,
-        r_onset::Float64= 4.00)::AtomicBasisSets.AtomBasisSet
+        r_onset::Float64= 4.00)::BasisSets.AtomBasisSet
         #Define parameters and produce an exponential grid.
         #r_max::Float64=50;#Max radius of space grid.
         #Z::Int64=8; #Atomic number, also used as the charge of coulomb potential.
@@ -81,7 +81,7 @@ using Printf
                 V_conf= Potentials.Blum_confinement_potential(s, r_onset,grid_stru.grid);
             end
             #Initializing basis set data structure
-            basis= AtomicBasisSets.init_AtomBasisSet(Z, grid_stru.grid);
+            basis= BasisSets.AtomBasisSet(Z, grid_stru.grid);
 
             #Energy minimization loop 
             while abs(E_total - E_total_before) > 10.0e-8
@@ -298,7 +298,7 @@ using Printf
             #println("✅ Successfully created $final_pdf with table and orbital plots!")
             basis_save_path=joinpath(dirname(@__FILE__),"../save_basis_set/$(potential_type)_z_$(Z)_r_max_$r_max.json")
             #joinpath(dirname(@__FILE__),"../save_basis_set/free_atom_z_$(Z)_r_max_$r_max.json")
-            AtomicBasisSets.save_basis_set(basis,basis_save_path)
+            BasisSets.save_basis_set(basis,basis_save_path)
         return basis
         end#let
     end

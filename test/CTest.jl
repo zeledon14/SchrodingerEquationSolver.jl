@@ -4,7 +4,7 @@ using Test
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, InitialConditions,
                                  OneDSchrodingerEquationSolver, OneDPoissonEquationSolver,
-                                 EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation
+                                 EigenvalueFinders, BasisSets, Density, ExchangeCorrelation
 @testset "CTest" begin
         
     #Define parameters and produce an exponential grid.
@@ -50,7 +50,7 @@ using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, Initial
     #Initializing correlation enrgy
     E_c::Float64= 0.0;
     #Initializing basis set data structure
-    basis= AtomicBasisSets.init_AtomBasisSet(Z, grid_stru.grid);
+    basis= BasisSets.AtomBasisSet(Z, grid_stru.grid);
 
     #Energy minimization loop 
     while abs(E_total - E_total_before) > 10.0e-8

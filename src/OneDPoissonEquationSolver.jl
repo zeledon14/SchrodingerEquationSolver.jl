@@ -44,7 +44,7 @@ function solver_uniform_integer_grid(Z::Int64,density::Vector{Float64},
     #a= (Z - U_hartree[end])/grid[end]
     #U_hartree= U_hartree .+ a.*grid
     # Physical boundary condition: far outside the density, U(r) -> Z (total enclosed charge)
-    U_hartree = U_hartree .* (Z / U_hartree[end])
+    #U_hartree = U_hartree .* (Z / U_hartree[end])
     #transform into V_hartree
     V_hartree=U_hartree./grid#[U_hartree[i]/xi for (i,xi) in enumerate(grid)]
     #return U_hartree

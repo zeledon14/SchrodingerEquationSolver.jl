@@ -4,7 +4,7 @@ using Pkg
 Pkg.activate(@__DIR__)
 
 using SchrodingerEquationSolver
-using SchrodingerEquationSolver: libxc_DFTAtom, AtomBasisSet, ExchangeCorrelation
+using SchrodingerEquationSolver: libxc_DFTAtom, BasisSets, ExchangeCorrelation
 using Plots
 using CSV
 using DataFrames

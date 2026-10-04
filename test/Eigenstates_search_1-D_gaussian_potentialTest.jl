@@ -4,7 +4,7 @@ using Test
 using SchrodingerEquationSolver
 using SchrodingerEquationSolver: Grids, Potentials, MathUtils, Hydrogen, InitialConditions,
                                  OneDSchrodingerEquationSolver, OneDPoissonEquationSolver,
-                                 EigenvalueFinders, AtomBasisSet, Density, ExchangeCorrelation
+                                 EigenvalueFinders, BasisSets, Density, ExchangeCorrelation
 @testset "Eigenstates_search_1-D_gaussian_potentialTest" begin
 
 # Space grid definition and creation
