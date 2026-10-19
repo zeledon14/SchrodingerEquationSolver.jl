@@ -26,14 +26,12 @@ module OneDSchrodingerEquationSolver
             throw(DomainError("the effective potential has no turning points 
             for the proposed energy eigenvalue, this means v_effe - E has no zeroes"));
         end
+        #fwrd_int_lmt=turn_pnts[1]+3;
         #do forward integration of radial shcrodinger equation u
-        u_fwd_temp= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(grid_i[i_1:end],
+        u_fwd= IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(grid_i[i_1:end],
                 g[i_1:end],f[i_1:end],
                 dx_di[i_1:end],u1,du1);
-        u_fwd= zeros(Float64, grid_stru.N);
-        u_fwd[i_1:end].= u_fwd_temp;
-        u_fwd_temp=Nothing;
-
+        last_no_nan= findlast(!isnan, u_fwd)
         #do backward integreation of the radial shcrodinger equation u 
         u_bwd_temp= reverse(IntegralNumericalMethods.integrate_second_order_DE_RK4_PCABM5_on_integer_grid(reverse(grid_i[1:i_end]),
         g,reverse(f[1:i_end]),
@@ -44,11 +42,15 @@ module OneDSchrodingerEquationSolver
 
         #rescale u_fwd, u_bwd to make u_fwd[turn_pnts[1]] = u_bwd[turn_pnts[1]] = 1
         u_fwd, u_bwd= MathUtils.rescale_to_unity_at_turning_point!(u_fwd, u_bwd, turn_pnts[1]);
+        numb_nodes= length(MathUtils.indices_of_zeros_finder(u_fwd[1:last_no_nan]));
+
         #merge solutions
         u_merged, merge_value, merge_ratio= MathUtils.merge_solutions(u_fwd, u_bwd, grid, turn_pnts[1]);
+        
         norm = MathUtils.integral(u_merged.^2 .* dx_di, grid_i)
         u_merged ./= sqrt(norm)
-        return u_merged, merge_value, merge_ratio
+        #numb_nodes= length(MathUtils.indices_of_zeros_finder(u_bwd));
+        return u_merged, merge_value, numb_nodes
     end
 end
 
